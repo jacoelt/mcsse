@@ -1,13 +1,32 @@
 from django.db import models
 
+
+class ServerTag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=True, null=True)
+    relevance = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
 class Server(models.Model):
-    ip_address = models.GenericIPAddressField(primary_key=True)
+    ip_address = models.URLField(primary_key=True)
     name = models.CharField(max_length=255)
     port = models.PositiveIntegerField(default=25565)
     version = models.CharField(max_length=50, blank=True, null=True)
     players_online = models.PositiveIntegerField(default=0)
     max_players = models.PositiveIntegerField(default=0)
     motd = models.TextField(blank=True, null=True)
+    banner = models.URLField(blank=True, null=True)
+    added_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[("online", "Online"), ("offline", "Offline"), ("unknown", "Unknown")],
+        default="unknown",
+    )
+    total_votes = models.PositiveIntegerField(default=0)
+    tags = models.ManyToManyField(ServerTag, related_name="servers", blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.ip_address}:{self.port})"

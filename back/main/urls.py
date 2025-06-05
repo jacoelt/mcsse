@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from core import api as core_api
 
-from back import core
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', core.api.urls),  # Include the API URLs
+    path('api/', core_api.api.urls),  # Include the API URLs
 ]
