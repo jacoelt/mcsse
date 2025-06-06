@@ -27,6 +27,7 @@ class Server(models.Model):
     )
     total_votes = models.PositiveIntegerField(default=0)
     tags = models.ManyToManyField(ServerTag, related_name="servers", blank=True)
+    country = models.CharField(max_length=2, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.ip_address}:{self.port})"
