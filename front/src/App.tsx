@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import ServerList from "./components/ServerList";
+import type { Server } from "./types/Server";
 
-function App() {
-  const [count, setCount] = useState(0)
+
+const API_HOST = import.meta.env.VITE_API_HOST
+
+
+export default function App() {
+  const [servers, setServers] = useState<Server[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [serverFetchError, setServerFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServers = async () => {
+      try {
+        const res = await fetch(`${API_HOST}/api/servers`);
+        if (!res.ok) throw new Error("Failed to fetch servers");
+        const data = await res.json();
+        setServers(data);
+      } catch (err) {
+        setServerFetchError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServers();
+  }, []);
+
+  const handleViewDetails = (server: Server) => {
+    alert(`Joining ${server.name} at ${server.ip_address}...`);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Minecraft Server Explorer</h1>
 
-export default App
+      {serverFetchError ? (
+        <p className="text-red-600">{serverFetchError}</p>
+      ) : (
+        <ServerList servers={servers} loading={loading} onViewDetails={handleViewDetails} />
+      )}
+    </div>
+  );
+}
