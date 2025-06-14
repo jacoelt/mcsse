@@ -14,4 +14,7 @@ export type Server = {
   total_votes: number;
   country: string;
   tags: ServerTag[];
+  edition: "java" | "bedrock" | "both";
+  website: string;
+  discord: string;
 };

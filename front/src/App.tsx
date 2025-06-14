@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import ServerList from "./components/ServerList";
 import type { Server } from "./types/Server";
+import { Box, Typography } from "@mui/material";
+import Footer from "./components/Footer";
+import SearchBar from "./components/SearchBar";
+import AdBox from "./components/AdBox";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
@@ -33,14 +37,25 @@ export default function App() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Minecraft Server Explorer</h1>
-
-      {serverFetchError ? (
-        <p className="text-red-600">{serverFetchError}</p>
-      ) : (
-        <ServerList servers={servers} loading={loading} onViewDetails={handleViewDetails} />
-      )}
-    </div>
+    <Box>
+      <Box>
+        <SearchBar />
+        <Box>
+          <Box>
+            <Typography variant="h3">Minecraft Server Explorer</Typography>
+            <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
+          </Box>
+          <Box>
+            {serverFetchError ? (
+              <p className="text-red-600">{serverFetchError}</p>
+            ) : (
+              <ServerList servers={servers} loading={loading} onViewDetails={handleViewDetails} />
+            )}
+          </Box>
+        </Box>
+        <AdBox />
+      </Box>
+      <Footer />
+    </Box>
   );
 }
