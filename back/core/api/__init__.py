@@ -1,3 +1,4 @@
+from time import sleep
 from ninja import NinjaAPI
 
 from core.api.schema import ServerOut
@@ -12,4 +13,5 @@ def list_servers(request):
     """
     List all servers.
     """
+    sleep(2)
     return Server.objects.all()
