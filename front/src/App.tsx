@@ -5,6 +5,9 @@ import { Box, Typography } from "@mui/material";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import AdBox from "./components/AdBox";
+import type { SearchParams } from "./types/SearchParams";
+import type { SearchValuesList } from "./types/SearchValuesList";
+import { getCountry } from "./helpers/countries";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
@@ -14,6 +17,45 @@ export default function App() {
   const [servers, setServers] = useState<Server[]>([]);
   const [loading, setLoading] = useState(true);
   const [serverFetchError, setServerFetchError] = useState<string | null>(null);
+
+  const initialSearch: SearchParams = {}
+  // Get initial search params from URL
+  const handleSearch = (search: SearchParams) => {
+    alert(`Searching for: ${JSON.stringify(search)}`);
+  }
+
+  const searchValuesList: SearchValuesList = {
+    versions: ["1.20", "1.19", "1.18"],
+    editions: ["Java", "Bedrock", "Java + Bedrock"],
+    countries: [
+      getCountry("US"),
+      getCountry("CA"),
+      getCountry("GB"),
+      getCountry("FR"),
+      getCountry("DE"),
+      getCountry("JP"),
+      getCountry("AU"),
+    ],
+    tags: [
+      { name: "Survival", description: "Survival mode servers", relevance: 10 },
+      { name: "Creative", description: "Creative mode servers", relevance: 10 },
+      { name: "Minigames", description: "Servers with various minigames", relevance: 30 },
+      { name: "PvP", description: "Player vs Player combat servers", relevance: 30 },
+      { name: "Roleplay", description: "Roleplaying servers", relevance: 30 },
+      { name: "Vanilla", description: "Vanilla Minecraft servers", relevance: 10 },
+    ],
+    dates: [
+      { label: "Last 7 days", value: "7d" },
+      { label: "Last month", value: "1m" },
+      { label: "Last 3 months", value: "3m" },
+      { label: "Last 6 months", value: "6m" },
+      { label: "Last year", value: "1y" },
+      { label: "Last 5 years", value: "5y" },
+      { label: "All time", value: "" },
+    ],
+    statuses: ["Online", "Offline", "Unknown"],
+    maxVotes: 10000,
+  };
 
   useEffect(() => {
     const fetchServers = async () => {
@@ -39,7 +81,7 @@ export default function App() {
   return (
     <Box>
       <Box>
-        <SearchBar />
+        <SearchBar valuesList={searchValuesList} initialSearch={initialSearch} handleSearch={handleSearch} />
         <Box>
           <Box>
             <Typography variant="h3">Minecraft Server Explorer</Typography>
