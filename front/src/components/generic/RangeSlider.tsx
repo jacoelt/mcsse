@@ -2,11 +2,12 @@ import { InputLabel, Slider, Stack } from "@mui/material";
 import React from "react";
 
 
-export function RangeSlider({ label, onChange, min, max }: {
+export function RangeSlider({ label, onChange, min, max, sx }: {
   label: string;
   onChange: (newValue: number[]) => void;
   min: number;
   max: number;
+  sx?: React.CSSProperties;
 }) {
 
   const [value, setValue] = React.useState<number[]>([min, max]);
@@ -19,7 +20,7 @@ export function RangeSlider({ label, onChange, min, max }: {
   }
 
   return (
-    <Stack direction="row" spacing={3}>
+    <Stack direction="row" spacing={3} sx={{ ...sx }}>
       <InputLabel sx={{ whiteSpace: 'nowrap', overflow: 'visible' }}>{label}</InputLabel>
 
       <Slider

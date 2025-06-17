@@ -1,4 +1,4 @@
-import { InputAdornment, Slider, Stack, TextField } from "@mui/material";
+import { Button, InputAdornment, Slider, Stack, TextField } from "@mui/material";
 import type { SearchParams } from "../types/SearchParams";
 import { SearchOutlined } from "@mui/icons-material";
 import SelectMultiple from "./generic/SelectMultiple";
@@ -29,6 +29,11 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
           const query = e.target.value.trim();
           setCurrentSearch((prev) => ({ ...prev, query }));
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearch(currentSearch);
+          }
+        }}
         slotProps={{
           input: {
             startAdornment: (
@@ -48,7 +53,7 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
         }}
       />
 
-      <SelectSimple label="Edition" itemList={valuesList.editions} onChange={(selection) => {
+      <SelectSimple sx={{ margin: 2 }} label="Edition" itemList={valuesList.editions} onChange={(selection) => {
         setCurrentSearch((prev) => ({ ...prev, edition: selection as Edition }));
       }} />
 
@@ -135,6 +140,17 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
           setCurrentSearch((prev) => ({ ...prev, tags: selection.map(item => item.value) }));
         }}
       />
+
+      <Stack direction="row" justifyContent="center">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SearchOutlined />}
+          onClick={() => handleSearch(currentSearch)}
+        >
+          Search
+        </Button>
+      </Stack>
     </Stack>
   )
 }

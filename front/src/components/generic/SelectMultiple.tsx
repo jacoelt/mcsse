@@ -1,13 +1,6 @@
 import { Box, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select, Tooltip, useTheme, type SelectChangeEvent, type Theme } from "@mui/material";
 import React from "react";
-
-
-export type SelectItem = {
-  value: string;
-  label?: string;
-  chip?: string;
-  tooltip?: string;
-};
+import type { SelectItem } from "../../types/SelectItem";
 
 
 const ITEM_HEIGHT = 48;
@@ -22,16 +15,16 @@ const MenuProps = {
 };
 
 // Dynamic styles based on selection
-function getStyles(item: string, selectedItem: readonly string[], theme: Theme) {
+function getStyles(item: string, selectedItems: readonly string[], theme: Theme) {
   return {
-    fontWeight: selectedItem.includes(item)
+    fontWeight: selectedItems.includes(item)
       ? theme.typography.fontWeightMedium
       : theme.typography.fontWeightRegular,
   };
 }
 
 
-export default function SelectMultiple({label, itemList, onChange}: {label: string, itemList: SelectItem[], onChange: (selection: SelectItem[]) => void}) {
+export default function SelectMultiple({label, itemList, onChange, sx}: {label: string, itemList: SelectItem[], onChange: (selection: SelectItem[]) => void, sx?: React.CSSProperties}) {
   const theme = useTheme();
   const [selection, setSelection] = React.useState<string[]>([]);
 
@@ -60,7 +53,7 @@ export default function SelectMultiple({label, itemList, onChange}: {label: stri
   };
 
   return (
-    <FormControl>
+    <FormControl sx={{ ...sx }}>
       <InputLabel>{label}</InputLabel>
       <Select
         multiple

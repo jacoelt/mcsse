@@ -26,7 +26,11 @@ export default function App() {
 
   const searchValuesList: SearchValuesList = {
     versions: ["1.20", "1.19", "1.18"],
-    editions: ["Java", "Bedrock", "Java + Bedrock"],
+    editions: [
+      { value: "java", label: "Java" },
+      { value: "bedrock", label: "Bedrock" },
+      { value: "both", label: "Java & Bedrock" },
+    ],
     countries: [
       getCountry("US"),
       getCountry("CA"),
