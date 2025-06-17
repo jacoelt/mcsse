@@ -1,4 +1,3 @@
-
 from ninja import ModelSchema
 
 from core.models import Server, ServerTag

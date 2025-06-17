@@ -79,7 +79,7 @@ export default function App() {
   }, []);
 
   const handleViewDetails = (server: Server) => {
-    alert(`Joining ${server.name} at ${server.ip_address}...`);
+    alert(`Joining ${server.name} at ${server.ip_address_java}...`);
   };
 
   return (

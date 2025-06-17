@@ -1,30 +1,19 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import type { Server } from "../types/Server";
 import type { ServerTag } from "../types/ServerTag";
 import { CancelOutlined, CheckCircleOutlined, ContentCopy, HelpOutline } from "@mui/icons-material";
 import { Box, Card, CardActionArea, CardMedia, Chip, Icon, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { getCountry } from "../helpers/countries";
+import TextCopy from "./generic/TextCopy";
 
 
-type ServerListItemProps = {
+interface ServerListItemProps {
   server: Server;
   onViewDetails: (server: Server) => void;
 };
 
 export default function ServerListItem({ server, onViewDetails }: ServerListItemProps) {
-  const [copied, setCopied] = useState(false);
-
   const country = getCountry(server.country);
-
-  const handleCopy = (event: Event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    navigator.clipboard.writeText(server.ip_address).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
 
   const statusIcons = {
     online: <CheckCircleOutlined />,
@@ -42,34 +31,16 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
             </Typography>
             <Typography variant="h6" title={country.name}>{country.flag}</Typography>
           </Box>
-          <Box>
-            <Typography variant="body1" sx={{ marginRight: 1 }}>
-              {server.ip_address}
-            </Typography>
-            <Tooltip
-                open={copied}
-                disableFocusListener
-                disableHoverListener
-                disableTouchListener
-                title="Copied!"
-                slotProps={{
-                  popper: {
-                    disablePortal: true,
-                  },
-                }}
-              >
-              <IconButton
-                // Stop Ripple Effect
-                onTouchStart={(event) => event.stopPropagation()}
-                onMouseDown={(event) => event.stopPropagation()}
-                onClick={handleCopy}
-                sx={{ cursor: 'pointer', color: copied ? 'green' : 'inherit' }}
-              >
-                {copied ? <CheckCircleOutlined /> : <ContentCopy />}
-              </IconButton>
-            </Tooltip>
 
-          </Box>
+          <Stack>
+            {server.ip_address_java && (
+              <TextCopy text={server.ip_address_java} tooltip="Java IP Address" />
+            )}
+            {server.ip_address_bedrock && (
+              <TextCopy text={server.ip_address_bedrock} tooltip="Bedrock IP Address" />
+            )}
+          </Stack>
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Icon sx={{ color: server.status === 'online' ? 'green' : server.status === 'offline' ? 'red' : 'gray' }}>
               {statusIcons[server.status] || <HelpOutline />}

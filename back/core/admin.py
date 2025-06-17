@@ -7,15 +7,16 @@ from .models import Server, ServerTag
 @admin.register(Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = (
-        "ip_address",
         "name",
+        "ip_address_java",
+        "ip_address_bedrock",
         "version",
         "players_online",
         "max_players",
         "status",
         "added_at",
     )
-    search_fields = ("name", "ip_address")
+    search_fields = ("name", "ip_address_java", "ip_address_bedrock")
     list_filter = ("status", "version")
     ordering = ("-added_at",)
 

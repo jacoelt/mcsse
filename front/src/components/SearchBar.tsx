@@ -1,4 +1,4 @@
-import { Button, InputAdornment, Slider, Stack, TextField } from "@mui/material";
+import { Button, InputAdornment, Stack, TextField } from "@mui/material";
 import type { SearchParams } from "../types/SearchParams";
 import { SearchOutlined } from "@mui/icons-material";
 import SelectMultiple from "./generic/SelectMultiple";
@@ -10,7 +10,7 @@ import { RangeSlider } from "./generic/RangeSlider";
 import { DateDeltaSelector } from "./DateDeltaSelector";
 
 
-type SearchBarProps = {
+interface SearchBarProps {
   valuesList: SearchValuesList
   initialSearch: SearchParams;
   handleSearch: (search: SearchParams) => void;

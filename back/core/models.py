@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -24,8 +25,10 @@ class Server(models.Model):
         ("both", "Java + Bedrock"),
     ]
 
-    ip_address = models.URLField(primary_key=True)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=255)
+    ip_address_java = models.URLField(blank=True, null=True)
+    ip_address_bedrock = models.URLField(blank=True, null=True)
     version = models.CharField(max_length=50, blank=True, null=True)
     players_online = models.PositiveIntegerField(default=0)
     max_players = models.PositiveIntegerField(default=0)
@@ -49,4 +52,4 @@ class Server(models.Model):
     discord = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name} ({self.ip_address})"
+        return f"{self.name} ({self.ip_address_java or self.ip_address_bedrock})"

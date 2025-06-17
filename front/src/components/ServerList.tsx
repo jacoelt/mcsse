@@ -4,7 +4,7 @@ import ServerListEmptyState from "./ServerListEmptyState";
 import ServerListItemSkeleton from "./ServerListItemSkeleton";
 import ServerListItem from "./ServerListItem";
 
-type ServerListProps = {
+interface ServerListProps {
   servers: Server[];
   loading: boolean;
   onViewDetails: (server: Server) => void;
@@ -23,7 +23,7 @@ export default function ServerList ({servers, loading, onViewDetails}: ServerLis
           <ServerListEmptyState />
         ) : (
           servers.map((server) => (
-            <ServerListItem key={server.ip_address} server={server} onViewDetails={onViewDetails} />
+            <ServerListItem key={server.id} server={server} onViewDetails={onViewDetails} />
           ))
         )}
       </Box>

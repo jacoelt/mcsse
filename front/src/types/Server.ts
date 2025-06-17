@@ -2,7 +2,9 @@ import type { ServerTag } from "./ServerTag";
 
 
 export type Server = {
-  ip_address: string;
+  id: string;
+  ip_address_java: string;
+  ip_address_bedrock: string;
   name: string;
   version: string;
   players_online: number;
