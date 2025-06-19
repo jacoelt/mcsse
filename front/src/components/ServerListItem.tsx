@@ -1,8 +1,7 @@
-import { useState, type MouseEvent } from "react";
 import type { Server } from "../types/Server";
 import type { ServerTag } from "../types/ServerTag";
-import { CancelOutlined, CheckCircleOutlined, ContentCopy, HelpOutline } from "@mui/icons-material";
-import { Box, Card, CardActionArea, CardMedia, Chip, Icon, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { CancelOutlined, CheckCircleOutlined, HelpOutline } from "@mui/icons-material";
+import { Box, Card, CardActionArea, CardMedia, Chip, Icon, Stack, Typography } from "@mui/material";
 import { getCountry } from "../helpers/countries";
 import TextCopy from "./generic/TextCopy";
 
@@ -67,7 +66,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
           </Stack>
           <Box>
             <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: 1 }}>
-              {server.motd || "No MOTD available"}
+              {server.description || "No description available"}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>

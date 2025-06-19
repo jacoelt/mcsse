@@ -29,10 +29,10 @@ class Server(models.Model):
     name = models.CharField(max_length=255)
     ip_address_java = models.URLField(blank=True, null=True)
     ip_address_bedrock = models.URLField(blank=True, null=True)
-    version = models.CharField(max_length=50, blank=True, null=True)
+    versions = models.CharField(max_length=511, blank=True, null=True)
     players_online = models.PositiveIntegerField(default=0)
     max_players = models.PositiveIntegerField(default=0)
-    motd = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     banner = models.URLField(blank=True, null=True)
     added_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
@@ -43,6 +43,7 @@ class Server(models.Model):
     total_votes = models.PositiveIntegerField(default=0)
     tags = models.ManyToManyField(ServerTag, related_name="servers", blank=True)
     country = models.CharField(max_length=2, blank=True, null=True)
+    languages = models.CharField(max_length=511, blank=True, null=True)
     edition = models.CharField(
         max_length=10,
         choices=EDITION_CHOICES,

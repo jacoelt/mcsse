@@ -10,14 +10,14 @@ class ServerAdmin(admin.ModelAdmin):
         "name",
         "ip_address_java",
         "ip_address_bedrock",
-        "version",
+        "versions",
         "players_online",
         "max_players",
         "status",
         "added_at",
     )
     search_fields = ("name", "ip_address_java", "ip_address_bedrock")
-    list_filter = ("status", "version")
+    list_filter = ("status", "versions")
     ordering = ("-added_at",)
 
 

@@ -8,6 +8,7 @@ import AdBox from "./components/AdBox";
 import type { SearchParams } from "./types/SearchParams";
 import type { SearchValuesList } from "./types/SearchValuesList";
 import { getCountry } from "./helpers/countries";
+import { ServerView } from "./components/ServerView";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
@@ -17,6 +18,7 @@ export default function App() {
   const [servers, setServers] = useState<Server[]>([]);
   const [loading, setLoading] = useState(true);
   const [serverFetchError, setServerFetchError] = useState<string | null>(null);
+  const [currentViewedServer, setCurrentViewedServer] = useState<Server | null>(null);
 
   const initialSearch: SearchParams = {}
   // Get initial search params from URL
@@ -78,10 +80,6 @@ export default function App() {
     fetchServers();
   }, []);
 
-  const handleViewDetails = (server: Server) => {
-    alert(`Joining ${server.name} at ${server.ip_address_java}...`);
-  };
-
   return (
     <Box>
       <Box>
@@ -95,8 +93,10 @@ export default function App() {
             {serverFetchError ? (
               <p className="text-red-600">{serverFetchError}</p>
             ) : (
-              <ServerList servers={servers} loading={loading} onViewDetails={handleViewDetails} />
+              <ServerList servers={servers} loading={loading} onViewDetails={setCurrentViewedServer} />
             )}
+
+            <ServerView server={currentViewedServer} onClose={() => {setCurrentViewedServer(null)}} />
           </Box>
         </Box>
         <AdBox />

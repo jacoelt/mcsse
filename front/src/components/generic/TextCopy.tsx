@@ -3,13 +3,13 @@ import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
 
 
-export default function TextCopy({ text, tooltip, sx }: { text: string, tooltip?: string, sx?: React.CSSProperties }) {
+export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: string, textToCopy?:string, tooltip?: string, sx?: React.CSSProperties }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(textToCopy || text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });

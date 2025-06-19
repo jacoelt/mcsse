@@ -9,7 +9,7 @@ export type Server = {
   version: string;
   players_online: number;
   max_players: number;
-  motd: string;
+  description: string;
   banner: string;
   added_at: string; // ISO date string
   status: "online" | "offline" | "unknown";
@@ -19,4 +19,5 @@ export type Server = {
   edition: "java" | "bedrock" | "both";
   website: string;
   discord: string;
+  languages: string[];
 };
