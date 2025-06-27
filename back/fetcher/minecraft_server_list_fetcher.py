@@ -1,8 +1,8 @@
-from core.helpers.countries import get_country_code
+from fetcher.helpers.countries import get_country_code
 from fetcher.fetched_server import FetchedServer
 from fetcher.helpers.webpage_getter import WebpageGetter
 from fetcher.server_fetcher_base import ServerFetcherBase
-from core.models import Server, ServerTag
+from core.models import ServerTag
 from bs4 import BeautifulSoup
 
 
@@ -14,10 +14,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
     def __init__(self):
         pass
 
-    async def get_new_servers(self) -> list[Server]:
-        raise NotImplementedError("Subclasses must implement this.")
-
-    async def get_all_servers(self) -> list[Server]:
+    async def get_all_servers(self) -> list[FetchedServer]:
 
         # Get server list webpage content
         webpage_getter = WebpageGetter()
@@ -29,7 +26,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             ],
             wait_for_class="serverdatadiv1",
             delay_between_page_loads=0,
-            max_concurrent_requests=5,
+            max_concurrent_requests=10,
             cache_only=True,
         )
 
@@ -63,18 +60,32 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             ],
             wait_for_class="serverdatadiv",
             delay_between_page_loads=0,
-            max_concurrent_requests=5,
+            max_concurrent_requests=10,
             cache_only=True,
         )
 
         servers = []
+        error_list = []
         for server_content in server_pages:
+            if not server_content:
+                continue
 
-            server = self._parse_server_content(server_content)
+            try:
+                server = self._parse_server_content(server_content)
+            except Exception as e:
+                print(f"Error parsing server content: {e}")
+                error_list.append(e)
+                continue
 
             servers.append(server)
 
-            return servers
+        if error_list:
+            raise ExceptionGroup(
+                "Errors occurred while parsing server content",
+                error_list,
+            )
+
+        return servers
 
     def _parse_server_content(self, server_content: str) -> list[FetchedServer]:
         soup = BeautifulSoup(server_content, "html.parser")
@@ -84,6 +95,8 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         server.description = self._parse_server_description(soup)
 
         server_data_block = soup.select_one("div.serverdatadiv table.serverdata")
+        if not server_data_block:
+            return server
 
         server.ip_address_java = server_data_block.find(
             name="th", string="Java IP:"
@@ -141,8 +154,15 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         )
         if external_links_header:
             external_links = external_links_header.next_sibling
-            server.website = external_links.find("a", string="Server Website")["href"]
-            server.discord = external_links.find("a", string="Discord")["href"]
+
+            if external_links:
+                website_link = external_links.find("a", string="Server Website")
+                if website_link:
+                    server.website = website_link["href"]
+
+                discord_link = external_links.find("a", string="Discord")
+                if discord_link:
+                    server.discord = discord_link["href"]
 
         server.tags = self._parse_server_tags(soup)
 
@@ -151,12 +171,12 @@ class MinecraftServerListFetcher(ServerFetcherBase):
     def _parse_server_name(self, soup: BeautifulSoup) -> str:
         name_block = soup.select_one(
             "h1.server-heading.entry-title.server-detail-heading"
-        ).children
+        )
 
         if name_block:
             # The server name is inside an <h1> tag
             # and can be either directly in the tag or in a <a> tag without "button-server-ip" class inside it
-            for child in name_block:
+            for child in name_block.children:
                 if child.name == "a" and "button-server-ip" not in child.get(
                     "class", []
                 ):
@@ -167,25 +187,35 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         return ""
 
     def _parse_server_description(self, soup: BeautifulSoup) -> str:
-        description_block = soup.select_one("div.entry-content").contents
+        description_block = soup.select_one("div.entry-content")
+
+        if not description_block:
+            return ""
+
+        description_block_contents = description_block.contents
 
         start_description_index = None
 
         description_str = ""
 
-        for i in range(len(description_block)):
+        for i in range(len(description_block_contents)):
 
             # Description is either in the first <p> tag or contained between 2 empty <p> tags
             if start_description_index is not None:
                 # If we have found the start index, we concatenate the text until we find the next <p> tag
-                if description_block[i].name and description_block[i].name != "div":
-                    description_str += description_block[i].get_text(strip=True)
+                if (
+                    description_block_contents[i].name
+                    and description_block_contents[i].name != "div"
+                ):
+                    description_str += description_block_contents[i].get_text(
+                        strip=True
+                    )
 
-                elif description_block[i].name is None:
-                    description_str += str(description_block[i]).strip() + "\n"
+                elif description_block_contents[i].name is None:
+                    description_str += str(description_block_contents[i]).strip() + "\n"
 
-            if description_block[i].name == "p":
-                description = description_block[i].get_text(strip=True)
+            if description_block_contents[i].name == "p":
+                description = description_block_contents[i].get_text(strip=True)
 
                 if description:
                     return description
@@ -215,6 +245,10 @@ class MinecraftServerListFetcher(ServerFetcherBase):
 
         country_name = country_flag.get("alt", "").strip()
         if country_name:
+            if len(country_name) == 2:
+                # If the country name is already a 2-letter code, return it directly
+                return country_name.lower()
+
             return get_country_code(country_name)
 
         return None

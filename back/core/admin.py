@@ -19,6 +19,7 @@ class ServerAdmin(admin.ModelAdmin):
     search_fields = ("name", "ip_address_java", "ip_address_bedrock")
     list_filter = ("status", "versions")
     ordering = ("-added_at",)
+    filter_horizontal = ("tags",)
 
 
 @admin.register(ServerTag)

@@ -57,6 +57,7 @@ COUNTRY_MAPPING = {
     "Curaçao": "cw",
     "Cyprus": "cy",
     "Czechia": "cz",
+    "Czech Republic": "cz",
     "Côte d'Ivoire": "ci",
     "Denmark": "dk",
     "Djibouti": "dj",
@@ -154,6 +155,7 @@ COUNTRY_MAPPING = {
     "Namibia": "na",
     "Nauru": "nr",
     "Nepal": "np",
+    "np": "np",
     "Netherlands (the)": "nl",
     "New Caledonia": "nc",
     "New Zealand": "nz",
@@ -241,6 +243,7 @@ COUNTRY_MAPPING = {
     "Vanuatu": "vu",
     "Venezuela (Bolivarian Republic of)": "ve",
     "Viet Nam": "vn",
+    "Vietnam": "vn",
     "Virgin Islands (British)": "vg",
     "Virgin Islands (U.S.)": "vi",
     "Wallis and Futuna": "wf",
@@ -249,6 +252,7 @@ COUNTRY_MAPPING = {
     "Zambia": "zm",
     "Zimbabwe": "zw",
     "Åland Islands": "ax",
+    "Europe": "eu",
 }
 
 
