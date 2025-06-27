@@ -28,12 +28,12 @@ class Server(models.Model):
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     ip_address_java = models.URLField(blank=True, null=True)
     ip_address_bedrock = models.URLField(blank=True, null=True)
     versions = models.CharField(max_length=511, blank=True, null=True)
     players_online = models.PositiveIntegerField(default=0)
     max_players = models.PositiveIntegerField(default=0)
-    description = models.TextField(blank=True, null=True)
     banner = models.URLField(blank=True, null=True)
     added_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(

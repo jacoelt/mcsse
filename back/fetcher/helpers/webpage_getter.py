@@ -1,5 +1,4 @@
 import asyncio
-import pdb
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -32,19 +31,25 @@ class WebpageGetter:
         wait_for_class: str = None,
         delay_between_page_loads: int = 0,
         max_concurrent_requests: int = 0,
+        cache_only: bool = False,
     ) -> list[str]:
 
         if max_concurrent_requests > 0:
             print(f"Using max concurrency of {max_concurrent_requests}")
             tasks = [
-                self._fetch_page(url, wait_for_class=wait_for_class) for url in urls
+                self._fetch_page(
+                    url, wait_for_class=wait_for_class, cache_only=cache_only
+                )
+                for url in urls
             ]
             results = await gather_with_concurrency(max_concurrent_requests, *tasks)
             return results
 
         results = []
         for url in urls:
-            page_content = await self._fetch_page(url, wait_for_class=wait_for_class)
+            page_content = await self._fetch_page(
+                url, wait_for_class=wait_for_class, cache_only=cache_only
+            )
 
             results.append(page_content)
 
@@ -54,12 +59,21 @@ class WebpageGetter:
 
         return results
 
-    async def _fetch_page(self, url, wait_for_class: str = None) -> str:
+    async def _fetch_page(
+        self,
+        url,
+        wait_for_class: str = None,
+        cache_only: bool = False,
+    ) -> str:
         # Check if the URL is cached
-        cached_content = cache.get(url)
+        cached_content = await asyncio.to_thread(lambda: cache.get(url))
         if cached_content:
             print(f"Using cached content for {url}")
             return cached_content
+
+        if cache_only:
+            print(f"Cache only mode enabled, skipping fetch for {url}")
+            return ""
 
         options = Options()
         options.add_argument("--headless=new")
@@ -77,7 +91,7 @@ class WebpageGetter:
         )
 
         print(f"Fetching {url}")
-        driver.get(url)
+        await asyncio.to_thread(lambda: driver.get(url))
 
         try:
             if wait_for_class:
