@@ -49,12 +49,12 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
         label="Version"
         itemList={valuesList.versions.map((version) => ({value: version}))}
         onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, versions: selection }));
+          setCurrentSearch((prev) => ({ ...prev, versions: selection.map(item => item.value) }));
         }}
       />
 
       <SelectSimple sx={{ margin: 2 }} label="Edition" itemList={valuesList.editions} onChange={(selection) => {
-        setCurrentSearch((prev) => ({ ...prev, edition: selection as Edition }));
+        setCurrentSearch((prev) => ({ ...prev, edition: selection ? (selection as Edition).value : undefined }));
       }} />
 
       <RangeSlider
@@ -99,7 +99,7 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
         label="Server Status"
         itemList={valuesList.statuses.map((status) => ({ value: status.toLowerCase(), label: status }))}
         onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, status: selection.map(item => item.value as "online" | "offline" | "unknown") }));
+          setCurrentSearch((prev) => ({ ...prev, statuses: selection.map(item => item.value as "online" | "offline" | "unknown") }));
         }}
       />
 
@@ -129,7 +129,7 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
           }
         ))}
         onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, country: selection.map(item => item.value) }));
+          setCurrentSearch((prev) => ({ ...prev, countries: selection.map(item => item.value) }));
         }}
       />
 
