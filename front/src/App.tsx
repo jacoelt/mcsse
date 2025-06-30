@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ServerList from "./components/ServerList";
 import type { Server } from "./types/Server";
 import { Box, Typography } from "@mui/material";
-import Footer from "./components/Footer";
+import Footer from "./components/footer/Footer";
 import SearchBar from "./components/SearchBar";
 import AdBox from "./components/AdBox";
 import type { SearchParams } from "./types/SearchParams";

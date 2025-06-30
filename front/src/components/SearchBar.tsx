@@ -23,7 +23,8 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
 
   return (
     <Stack>
-      <TextField variant="outlined"
+      <TextField
+        variant="outlined"
         label="Search Server name or IP"
         value={currentSearch.query || ""}
         onChange={(e) => {
