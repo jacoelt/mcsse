@@ -2,7 +2,7 @@ import { Chip, Dialog, DialogTitle, Grid, IconButton, Stack, Tooltip, Typography
 import type { Server } from "../types/Server";
 import TextCopy from "./generic/TextCopy";
 import { Close, InfoOutline, OpenInNew } from "@mui/icons-material";
-import { getLanguages } from "../helpers/languages";
+import { getLanguagesFromCode } from "../helpers/languages";
 
 
 export interface ServerViewProps {
@@ -105,7 +105,7 @@ export function ServerView({ server, onClose }: ServerViewProps) {
               </Grid>
               <Grid size={8}>
                 <Typography variant="body1">
-                  {server.languages ? getLanguages(server.languages) : "Unknown Languages"}
+                  {server.languages ? getLanguagesFromCode(server.languages) : "Unknown Languages"}
                 </Typography>
               </Grid>
 

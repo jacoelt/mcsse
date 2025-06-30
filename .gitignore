@@ -194,3 +194,7 @@ sketch
 
 # Local files
 *.cache
+
+# Editor settings
+.vscode/
+.idea/

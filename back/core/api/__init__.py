@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from django.db.models import Q
 from ninja import NinjaAPI
 
@@ -64,7 +64,7 @@ def list_servers(request, data: SearchIn):
         factor = timedelta_factor_map[unit]
         value = int(search_params.added_at[:-1])
         time_delta = timedelta(days=value * factor)
-        query &= Q(added_at__gte=(timezone.now() - time_delta))
+        query &= Q(added_at__gte=(datetime.now(timezone.utc) - time_delta))
 
     if search_params.statuses:
         subquery = Q()
@@ -84,9 +84,24 @@ def list_servers(request, data: SearchIn):
             subquery |= Q(country__iexact=country)
         query &= subquery
 
+    if search_params.languages:
+        subquery = Q()
+        for language in search_params.languages:
+            subquery |= Q(languages__icontains=language)
+        query &= subquery
+
     if search_params.tags:
+        through_table = Server.tags.through
+
         for tag in search_params.tags:
-            query &= Q(tags__name__iexact=tag)
+            query &= Q(
+                id__in=through_table.objects.filter(
+                    servertag__name__iexact=tag
+                ).values_list(
+                    "server_id",
+                    flat=True,
+                )
+            )
 
     servers = Server.objects.filter(query).distinct()
 

@@ -42,6 +42,7 @@ export default function App() {
       getCountry("JP"),
       getCountry("AU"),
     ],
+    languages: ["en", "es", "fr", "de", "ru", "zh", "ja", "ko", "pt", "it"],
     tags: [
       { name: "Survival", description: "Survival mode servers", relevance: 10 },
       { name: "Creative", description: "Creative mode servers", relevance: 10 },

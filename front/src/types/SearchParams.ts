@@ -12,6 +12,7 @@ export type SearchParams = {
   total_votes_min?: number; // Minimum total votes
   total_votes_max?: number; // Maximum total votes
   countries?: string[]; // Array of countries to filter by
+  languages?: string[]; // Array of languages to filter by
   tags?: string[]; // Array of tags to filter by
   sort_by?: "name" | "players_online" | "max_players" | "added_at" | "total_votes"; // Sort by field
   sort_order?: "asc" | "desc"; // Sort order

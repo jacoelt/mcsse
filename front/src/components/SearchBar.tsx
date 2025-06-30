@@ -8,6 +8,7 @@ import { SelectSimple } from "./generic/SelectSimple";
 import type { Edition } from "../types/Edition";
 import { RangeSlider } from "./generic/RangeSlider";
 import { DateDeltaSelector } from "./DateDeltaSelector";
+import { getLanguageFromCode } from "../helpers/languages";
 
 
 interface SearchBarProps {
@@ -130,6 +131,19 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
         ))}
         onChange={(selection) => {
           setCurrentSearch((prev) => ({ ...prev, countries: selection.map(item => item.value) }));
+        }}
+      />
+
+      <SelectMultiple
+        label="Languages"
+        itemList={valuesList.languages.map((language) => (
+          {
+            value: language,
+            label: getLanguageFromCode(language),
+          }
+        ))}
+        onChange={(selection) => {
+          setCurrentSearch((prev) => ({ ...prev, languages: selection.map(item => item.value) }));
         }}
       />
 

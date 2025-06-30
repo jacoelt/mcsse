@@ -109,10 +109,10 @@ const languageMap: Record<string, string> = {
 };
 
 
-export function getLanguage(language: string): string {
-  return languageMap[language] || "Unknown Language";
+export function getLanguageFromCode(language_code: string): string {
+  return languageMap[language_code] || "Unknown Language";
 }
 
-export function getLanguages(languages: string[]): string[] {
-  return languages.map(lang => getLanguage(lang)).filter(lang => lang !== "Unknown Language");
+export function getLanguagesFromCode(language_codes: string[]): string[] {
+  return language_codes.map(lang => getLanguageFromCode(lang)).filter(lang => lang !== "Unknown Language");
 }

@@ -36,6 +36,7 @@ class SearchIn(Schema):
     total_votes_min: int | None = None  # Minimum total votes
     total_votes_max: int | None = None  # Maximum total votes
     countries: list[str] | None = None  # Array of countries to filter by
+    languages: list[str] | None = None  # Array of languages to filter by
     tags: list[str] | None = None  # Array of tags to filter by
     sort_by: str | None = "name"  # Sort by field
     sort_order: str | None = "asc"  # Sort order

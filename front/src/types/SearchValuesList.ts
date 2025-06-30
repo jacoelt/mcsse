@@ -11,6 +11,7 @@ export type SearchValuesList = {
   versions: string[];
   editions: Edition[];
   countries: Country[];
+  languages: string[];
   dates: DateDelta[];
   statuses: ("Online" | "Offline" | "Unknown")[];
   tags: ServerTag[];
