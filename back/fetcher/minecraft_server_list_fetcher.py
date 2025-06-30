@@ -112,6 +112,14 @@ class MinecraftServerListFetcher(ServerFetcherBase):
                 f"{bedrock_ip}:{bedrock_port}" if bedrock_ip and bedrock_port else None
             )
 
+        server.banner = (
+            server_data_block.select_one("img.serverLogoSmall")["src"]
+            .replace("/small", "")
+            .strip()
+        )
+        if server.banner.startswith("//"):
+            server.banner = "https:" + server.banner
+
         server.versions = [
             server_data_block.find(
                 name="th", string="Server Version:"

@@ -18,6 +18,9 @@ def test_simple_server_info_parsing():
 
     assert server.ip_address_java == "mc.yourtown.city"
     assert server.ip_address_bedrock == None
+    assert server.banner == (
+        "https://cdn.minecraft-server-list.com/serverlogo/436034.jpg"
+    )
     assert server.versions == ["1.12.2"]
     assert server.players_online == 0
     assert server.max_players == 3
@@ -60,6 +63,9 @@ Quests
 Daily Challenges"""
     )
 
+    assert server.banner == (
+        "https://cdn.minecraft-server-list.com/serverlogo/380867.jpg"
+    )
     assert server.ip_address_java == "fun.opblocks.com"
     assert server.ip_address_bedrock == "bedrock.opblocks.com:19132"
     assert server.versions == ["1.21"]
