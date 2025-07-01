@@ -50,7 +50,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
           </Box>
           <Box>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {server.version || "Unknown Version"}
+              {server.versions || "Unknown Version"}
               {server.edition === "java" ? " (Java)" : server.edition === "bedrock" ? " (Bedrock)" : " (Java + Bedrock)"}
             </Typography>
           </Box>
@@ -59,7 +59,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
           <Stack sx={{ display: 'flex', direction: 'column' }}>
             <CardMedia component="img" image={server.banner || "/default-banner.png"} alt={server.name} sx={{ width: 460, height: 50, objectFit: 'cover', borderRadius: 1, marginTop: 1 }} />
             <Stack direction="row">
-              {server.tags.sort((a: ServerTag, b:ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>
+              {server.tags.sort((a: ServerTag, b: ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>
                 <Chip color="primary" size="small" label={tag.name} key={tag.name} sx={{ margin: '2px' }} />
               )}
             </Stack>

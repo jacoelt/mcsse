@@ -6,7 +6,7 @@ export type Server = {
   ip_address_java: string;
   ip_address_bedrock: string;
   name: string;
-  version: string;
+  versions: string;
   players_online: number;
   max_players: number;
   description: string;

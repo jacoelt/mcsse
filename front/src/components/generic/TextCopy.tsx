@@ -1,9 +1,9 @@
 import { CheckCircleOutlined, ContentCopy } from "@mui/icons-material";
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Icon, Stack, Tooltip, Typography } from "@mui/material";
 import { useState } from "react";
 
 
-export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: string, textToCopy?:string, tooltip?: string, sx?: React.CSSProperties }) {
+export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: string, textToCopy?: string, tooltip?: string, sx?: React.CSSProperties }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (event: React.MouseEvent) => {
@@ -31,20 +31,20 @@ export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: stri
         </Typography>
 
         <Tooltip
-            open={copied}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            title="Copied!"
-            slotProps={{
-              popper: {
-                disablePortal: true,
-              },
-            }}
-          >
-          <IconButton sx={{ color: copied ? 'green' : 'inherit' }}>
+          open={copied}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          title="Copied!"
+          slotProps={{
+            popper: {
+              disablePortal: true,
+            },
+          }}
+        >
+          <Icon sx={{ color: copied ? 'green' : 'inherit' }}>
             {copied ? <CheckCircleOutlined /> : <ContentCopy />}
-          </IconButton>
+          </Icon>
         </Tooltip>
       </Stack>
     </Tooltip>

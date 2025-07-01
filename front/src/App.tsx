@@ -19,10 +19,14 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [serverFetchError, setServerFetchError] = useState<string | null>(null);
   const [currentViewedServer, setCurrentViewedServer] = useState<Server | null>(null);
+  const [searchParams, setSearchParams] = useState<SearchParams>({});
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const initialSearch: SearchParams = {}
-  // Get initial search params from URL
-  const handleSearch = async (search: SearchParams) => {
+  const pageSize = 10;
+
+  const handleSearch = async (search: SearchParams, page?: number) => {
+    setSearchParams(search);
+
     try {
       setLoading(true);
       setServerFetchError(null);
@@ -33,13 +37,26 @@ export default function App() {
           "Accept": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(search),
+        body: JSON.stringify({
+          ...search,
+          page: page || 1,
+          limit: pageSize,
+        }),
       });
       if (!res.ok) throw new Error("Failed to fetch servers");
       const data = await res.json();
-      setServers(data);
+
+      if (page && page > 1) {
+        // If loading more, append to existing servers
+        setServers(prev => [...prev, ...data]);
+      } else {
+        // If initial search, replace existing servers
+        setServers(data);
+      }
+
     } catch (err) {
       setServerFetchError((err as Error).message);
+
     } finally {
       setLoading(false);
     }
@@ -48,6 +65,12 @@ export default function App() {
   useEffect(() => {
     handleSearch({});
   }, []);
+
+  const handleLoadMore = async () => {
+    if (loading) return; // Prevent loading more while already loading
+    setCurrentPage(prevPage => prevPage + 1); // Increment current page
+    handleSearch(searchParams, currentPage + 1);
+  }
 
   const searchValuesList: SearchValuesList = {
     versions: ["1.20", "1.19", "1.18"],
@@ -90,26 +113,23 @@ export default function App() {
   return (
     <Box>
       <Box>
-        <SearchBar valuesList={searchValuesList} initialSearch={initialSearch} handleSearch={handleSearch} />
+        <SearchBar valuesList={searchValuesList} initialSearch={searchParams} handleSearch={handleSearch} />
         <Box>
           <Box>
             <Typography variant="h3">Minecraft Server Explorer</Typography>
             <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
           </Box>
-          <Box
-            display="flex"
-            flexDirection="column"
-            height="calc(100vh - 200px)"
-            style={{
-              border: "2px solid black",
-              overflow: "hidden",
-              overflowY: "scroll" // added scroll
-            }}
-          >
+          <Box>
             {serverFetchError ? (
               <p className="text-red-600">{serverFetchError}</p>
             ) : (
-              <ServerList servers={servers} loading={loading} onViewDetails={setCurrentViewedServer} />
+              <ServerList
+                servers={servers}
+                loading={loading}
+                onViewDetails={setCurrentViewedServer}
+                onLoadMore={handleLoadMore}
+                hasMore={servers.length > 0 && servers.length % pageSize === 0}
+              />
             )}
 
             <ServerView server={currentViewedServer} onClose={() => { setCurrentViewedServer(null) }} />
