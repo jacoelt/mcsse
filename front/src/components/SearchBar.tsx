@@ -14,14 +14,15 @@ interface SearchBarProps {
   valuesList: SearchValuesList
   initialSearch: SearchParams;
   handleSearch: (search: SearchParams) => void;
+  sx?: React.CSSProperties;
 }
 
-export default function SearchBar({ valuesList, initialSearch, handleSearch }: SearchBarProps) {
+export default function SearchBar({ valuesList, initialSearch, handleSearch, sx }: SearchBarProps) {
 
   const [currentSearch, setCurrentSearch] = useState<SearchParams>(initialSearch);
 
   return (
-    <Stack direction="column" spacing={5} sx={{ padding: 3, minHeight: "100vh" }}>
+    <Stack direction="column" spacing={5} sx={{ padding: 3, paddingRight: 6, ...sx }}>
       <TextField
         variant="outlined"
         label="Search Server name or IP"

@@ -12,9 +12,10 @@ interface ServerListProps {
   onViewDetails: (server: Server) => void;
   onLoadMore: () => void;
   hasMore: boolean;
+  sx?: React.CSSProperties;
 };
 
-export default function ServerList({ servers, loading, onViewDetails, onLoadMore, hasMore }: ServerListProps) {
+export default function ServerList({ servers, loading, onViewDetails, onLoadMore, hasMore, sx }: ServerListProps) {
   return (
     <InfiniteScroll
       dataLength={servers.length}
@@ -26,7 +27,7 @@ export default function ServerList({ servers, loading, onViewDetails, onLoadMore
           {loading ? "Loading more servers..." : "No more servers to display."}
         </p>
       }
-      height="calc(100vh - 100px)"
+      style={{ ...sx }}
     >
       {servers.length === 0 ? (
         <ServerListEmptyState />

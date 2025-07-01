@@ -6,15 +6,14 @@ import ContactDialog from "./ContactDialog"
 // import CookiesDialog from "./CookiesDialog"
 import AboutDialog from "./AboutDialog"
 
-export default function Footer() {
-  const [ isTosVisible, setIsTosVisible ] = useState(false)
-  const [ isPrivacyVisible, setIsPrivacyVisible ] = useState(false)
+export default function Footer({ sx }: { sx?: React.CSSProperties }) {
+  const [isTosVisible, setIsTosVisible] = useState(false)
+  const [isPrivacyVisible, setIsPrivacyVisible] = useState(false)
   // const [ isCookiesVisible, setIsCookiesVisible ] = useState(false)
-  const [ isContactVisible, setIsContactVisible ] = useState(false)
-  const [ isAboutVisible, setIsAboutVisible ] = useState(false)
-  const [ isReportVisible, setIsReportVisible ] = useState(false)
+  const [isContactVisible, setIsContactVisible] = useState(false)
+  const [isAboutVisible, setIsAboutVisible] = useState(false)
 
-  const [ contactSubject, setContactSubject ] = useState("")
+  const [contactSubject, setContactSubject] = useState("")
 
 
   return (
@@ -23,6 +22,8 @@ export default function Footer() {
         direction="row"
         justifyContent="center"
         alignItems="center"
+        spacing={4}
+        sx={{ ...sx }}
       >
         <Stack direction="column" alignItems="center">
           <a href="#" onClick={() => setIsTosVisible(true)}>Terms of Service</a>
@@ -30,7 +31,7 @@ export default function Footer() {
           {/* <a href="#" onClick={() => setIsCookiesVisible(true)}>Cookie Policy</a> */}
         </Stack>
         <Stack direction="column" alignItems="center">
-          <a href="#" onClick={() => {setContactSubject(""); setIsContactVisible(true)}}>Contact Us</a>
+          <a href="#" onClick={() => { setContactSubject(""); setIsContactVisible(true) }}>Contact Us</a>
           <a href="#" onClick={() => setIsAboutVisible(true)}>About Us</a>
         </Stack>
       </Stack>

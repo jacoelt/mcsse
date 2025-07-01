@@ -60,7 +60,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
             </Typography>
           </Grid>
         </Grid>
-        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Grid size={5} direction="column">
             <CardMedia
               component="img"
@@ -68,7 +68,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
               alt={server.name}
               sx={{ width: "100%", borderRadius: 1, marginTop: 1 }}
             />
-            <Stack direction="row">
+            <Stack direction="row" sx={{ flexWrap: 'wrap', marginTop: 1 }}>
               {server.tags.sort((a: ServerTag, b: ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>
                 <Chip color="primary" size="small" label={tag.name} key={tag.name} sx={{ margin: '2px' }} />
               )}

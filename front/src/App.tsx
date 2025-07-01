@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ServerList from "./components/ServerList";
 import type { Server } from "./types/Server";
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Drawer, Grid, IconButton, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Footer from "./components/footer/Footer";
 import SearchBar from "./components/SearchBar";
 import AdBox from "./components/AdBox";
@@ -9,6 +9,7 @@ import type { SearchParams } from "./types/SearchParams";
 import type { SearchValuesList } from "./types/SearchValuesList";
 import { getCountry } from "./helpers/countries";
 import { ServerView } from "./components/ServerView";
+import { Close, Height, SearchOutlined } from "@mui/icons-material";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
@@ -24,6 +25,7 @@ export default function App() {
   const [searchValuesLists, setSearchValuesLists] = useState<SearchValuesList | null>(null);
 
   const pageSize = 10;
+  const searchBarWidth = 500;
 
   const handleSearch = async (search: SearchParams, page?: number) => {
     setSearchParams(search);
@@ -106,19 +108,90 @@ export default function App() {
     handleSearch({});
   }, []);
 
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
 
   return (
-    <Stack direction="column" spacing={2} sx={{ padding: 2, minHeight: "100vh" }}>
-      <Grid container spacing={3}>
-        <Grid size={3}>
+    <Stack direction="column">
+      <Stack spacing={3}
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        {!isLargeScreen && (
+          <IconButton
+            onClick={() => setIsSearchBarVisible(true)}
+            sx={{
+              position: "fixed",
+              top: 16,
+              left: 16,
+              zIndex: 1000,
+              backgroundColor: "white",
+              boxShadow: 2,
+              borderRadius: "50%",
+            }}
+          >
+            <SearchOutlined />
+          </IconButton>
+        )}
+
+        <Drawer
+          anchor="left"
+          open={isLargeScreen || isSearchBarVisible}
+          onClose={() => setCurrentViewedServer(null)}
+          variant={isLargeScreen ? "persistent" : "temporary"}
+          sx={{
+            width: `${searchBarWidth}px`,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: `${searchBarWidth}px`,
+              boxSizing: "border-box",
+            },
+
+          }}
+        >
+          {!isLargeScreen && (
+            <IconButton
+              onClick={() => setIsSearchBarVisible(false)}
+              sx={{
+                position: "fixed",
+                top: 16,
+                right: 16,
+                zIndex: 1000,
+                backgroundColor: "white",
+                boxShadow: 2,
+                borderRadius: "50%",
+              }}
+            >
+              <Close />
+            </IconButton>
+          )}
           {
             searchValuesLists &&
-            <SearchBar valuesList={searchValuesLists} initialSearch={searchParams} handleSearch={handleSearch} />
+            <SearchBar
+              valuesList={searchValuesLists}
+              initialSearch={searchParams}
+              handleSearch={(search) => { setIsSearchBarVisible(false); handleSearch(search) }}
+            />
           }
-        </Grid>
-        <Grid size={7} sx={{ display: "flex", flexDirection: "column" }}>
-          <Typography variant="h3">Minecraft Server Explorer</Typography>
-          <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
+        </Drawer>
+        <Stack
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            // paddingLeft: isLargeScreen ? `${searchBarWidth}px` : 0,
+            width: isLargeScreen ? `calc(100% - ${searchBarWidth}px - 100px)` : `calc(100% - 100px)`,
+          }}
+        >
+          <Typography variant="h3" sx={{ display: "flex", justifyContent: "center" }}>Minecraft Server Explorer</Typography>
+          <Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "center" }}>Explore and join Minecraft servers easily!</Typography>
 
           {serverFetchError ? (
             <p className="text-red-600">{serverFetchError}</p>
@@ -129,16 +202,27 @@ export default function App() {
               onViewDetails={setCurrentViewedServer}
               onLoadMore={handleLoadMore}
               hasMore={servers.length > 0 && servers.length % pageSize === 0}
+              sx={{
+                height: "calc(100vh - 200px)",
+              }}
             />
           )}
 
           <ServerView server={currentViewedServer} onClose={() => { setCurrentViewedServer(null) }} />
-        </Grid>
-        <Grid size={2}>
-          <AdBox />
-        </Grid>
-      </Grid>
-      <Footer />
+        </Stack>
+        <AdBox sx={{ width: "100px" }} />
+      </Stack>
+      <Footer
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "white",
+          padding: 2,
+          height: "40px",
+        }}
+      />
     </Stack>
   );
 }
