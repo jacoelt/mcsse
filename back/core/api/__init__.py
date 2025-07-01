@@ -53,17 +53,8 @@ def list_servers(request, data: SearchIn):
     if search_params.max_players_max is not None:
         query &= Q(max_players__lte=search_params.max_players_max)
 
-    if search_params.added_at:
-        timedelta_factor_map = {
-            "d": 1,
-            "w": 7,
-            "m": 30,
-            "y": 365,
-        }
-        unit = search_params.added_at[-1]
-        factor = timedelta_factor_map[unit]
-        value = int(search_params.added_at[:-1])
-        time_delta = timedelta(days=value * factor)
+    if search_params.days_prior is not None and search_params.days_prior > 0:
+        time_delta = timedelta(days=search_params.days_prior)
         query &= Q(added_at__gte=(datetime.now(timezone.utc) - time_delta))
 
     if search_params.statuses:

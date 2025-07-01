@@ -22,9 +22,32 @@ export default function App() {
 
   const initialSearch: SearchParams = {}
   // Get initial search params from URL
-  const handleSearch = (search: SearchParams) => {
-    alert(`Searching for: ${JSON.stringify(search)}`);
+  const handleSearch = async (search: SearchParams) => {
+    try {
+      setLoading(true);
+      setServerFetchError(null);
+      setCurrentViewedServer(null);
+      const res = await fetch(`${API_HOST}/api/servers`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(search),
+      });
+      if (!res.ok) throw new Error("Failed to fetch servers");
+      const data = await res.json();
+      setServers(data);
+    } catch (err) {
+      setServerFetchError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    handleSearch({});
+  }, []);
 
   const searchValuesList: SearchValuesList = {
     versions: ["1.20", "1.19", "1.18"],
@@ -52,34 +75,17 @@ export default function App() {
       { name: "Vanilla", description: "Vanilla Minecraft servers", relevance: 10 },
     ],
     dates: [
-      { label: "Last 7 days", value: "7d" },
-      { label: "Last month", value: "1m" },
-      { label: "Last 3 months", value: "3m" },
-      { label: "Last 6 months", value: "6m" },
-      { label: "Last year", value: "1y" },
-      { label: "Last 5 years", value: "5y" },
-      { label: "All time", value: "" },
+      { label: "Last 7 days", value: 7 },
+      { label: "Last month", value: 30 },
+      { label: "Last 3 months", value: 90 },
+      { label: "Last 6 months", value: 180 },
+      { label: "Last year", value: 365 },
+      { label: "Last 5 years", value: 1825 },
+      { label: "All time", value: -1 }, // -1 for all time
     ],
     statuses: ["Online", "Offline", "Unknown"],
     maxVotes: 10000,
   };
-
-  useEffect(() => {
-    const fetchServers = async () => {
-      try {
-        const res = await fetch(`${API_HOST}/api/servers`);
-        if (!res.ok) throw new Error("Failed to fetch servers");
-        const data = await res.json();
-        setServers(data);
-      } catch (err) {
-        setServerFetchError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchServers();
-  }, []);
 
   return (
     <Box>
@@ -90,14 +96,23 @@ export default function App() {
             <Typography variant="h3">Minecraft Server Explorer</Typography>
             <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
           </Box>
-          <Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            height="calc(100vh - 200px)"
+            style={{
+              border: "2px solid black",
+              overflow: "hidden",
+              overflowY: "scroll" // added scroll
+            }}
+          >
             {serverFetchError ? (
               <p className="text-red-600">{serverFetchError}</p>
             ) : (
               <ServerList servers={servers} loading={loading} onViewDetails={setCurrentViewedServer} />
             )}
 
-            <ServerView server={currentViewedServer} onClose={() => {setCurrentViewedServer(null)}} />
+            <ServerView server={currentViewedServer} onClose={() => { setCurrentViewedServer(null) }} />
           </Box>
         </Box>
         <AdBox />

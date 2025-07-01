@@ -12,18 +12,22 @@ function getStyles(item: string, selectedItem: string, theme: Theme) {
   };
 }
 
-export function SelectSimple({label, itemList, onChange, sx}: {label: string, itemList: SelectItem[], onChange: (selection: SelectItem) => void, sx?: React.CSSProperties}) {
+interface SelectSimpleProps {
+  label: string;
+  itemList: SelectItem[];
+  selection: string;
+  onChange: (selection: string) => void;
+  sx?: React.CSSProperties;
+}
+
+export function SelectSimple({ label, itemList, selection, onChange, sx }: SelectSimpleProps) {
   const theme = useTheme();
-  const [selection, setSelection] = React.useState<string>("");
 
   const onChangeWrapper = (event: SelectChangeEvent<typeof selection>) => {
     const {
-      target: { value: stringValue },
+      target: { value },
     } = event;
-    // Find the selected item in the itemList
-    const selectedItem = itemList.find(item => item.value === stringValue) || { value: stringValue, label: stringValue } as SelectItem;
-    setSelection(selectedItem.value);
-    onChange(selectedItem);
+    onChange(value);
   };
 
   return (

@@ -1,13 +1,12 @@
 import { Button, InputAdornment, Stack, TextField } from "@mui/material";
 import type { SearchParams } from "../types/SearchParams";
-import { SearchOutlined } from "@mui/icons-material";
+import { Replay, SearchOutlined } from "@mui/icons-material";
 import SelectMultiple from "./generic/SelectMultiple";
-import React from "react";
+import { useState } from "react";
 import type { SearchValuesList } from "../types/SearchValuesList";
 import { SelectSimple } from "./generic/SelectSimple";
-import type { Edition } from "../types/Edition";
 import { RangeSlider } from "./generic/RangeSlider";
-import { DateDeltaSelector } from "./DateDeltaSelector";
+import { DateDeltaSelector } from "./generic/DateDeltaSelector";
 import { getLanguageFromCode } from "../helpers/languages";
 
 
@@ -17,9 +16,9 @@ interface SearchBarProps {
   handleSearch: (search: SearchParams) => void;
 }
 
-export default function SearchBar({valuesList, initialSearch, handleSearch}: SearchBarProps) {
+export default function SearchBar({ valuesList, initialSearch, handleSearch }: SearchBarProps) {
 
-  const [currentSearch, setCurrentSearch] = React.useState<SearchParams>(initialSearch);
+  const [currentSearch, setCurrentSearch] = useState<SearchParams>(initialSearch);
 
   return (
     <Stack>
@@ -49,15 +48,22 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
 
       <SelectMultiple
         label="Version"
-        itemList={valuesList.versions.map((version) => ({value: version}))}
-        onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, versions: selection.map(item => item.value) }));
+        itemList={valuesList.versions.map((version) => ({ value: version }))}
+        onChange={(selection: string[]) => {
+          setCurrentSearch((prev) => ({ ...prev, versions: selection }));
         }}
+        selection={currentSearch.versions || []}
       />
 
-      <SelectSimple sx={{ margin: 2 }} label="Edition" itemList={valuesList.editions} onChange={(selection) => {
-        setCurrentSearch((prev) => ({ ...prev, edition: selection ? (selection as Edition).value : undefined }));
-      }} />
+      <SelectSimple
+        sx={{ margin: 2 }}
+        label="Edition"
+        itemList={valuesList.editions}
+        onChange={(selection) => {
+          setCurrentSearch((prev) => ({ ...prev, edition: selection }));
+        }}
+        selection={currentSearch.edition || ""}
+      />
 
       <RangeSlider
         label="Online Players"
@@ -72,6 +78,7 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
             }));
           }
         }}
+        value={[currentSearch.players_online_min || 0, currentSearch.players_online_max || 1000]}
       />
 
       <RangeSlider
@@ -87,22 +94,25 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
             }));
           }
         }}
+        value={[currentSearch.max_players_min || 0, currentSearch.max_players_max || 1000]}
       />
 
       <DateDeltaSelector
         label="Date Added"
         onChange={(value) => {
-          setCurrentSearch((prev) => ({ ...prev, date_added: value }));
+          setCurrentSearch((prev) => ({ ...prev, days_prior: value }));
         }}
         valueList={valuesList.dates}
+        value={currentSearch.days_prior || valuesList.dates[valuesList.dates.length - 1].value} // Default to the last item in the list
       />
 
       <SelectMultiple
         label="Server Status"
         itemList={valuesList.statuses.map((status) => ({ value: status.toLowerCase(), label: status }))}
-        onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, statuses: selection.map(item => item.value as "online" | "offline" | "unknown") }));
+        onChange={(selection: string[]) => {
+          setCurrentSearch((prev) => ({ ...prev, statuses: selection as ("online" | "offline" | "unknown")[] }));
         }}
+        selection={currentSearch.statuses || []}
       />
 
       <RangeSlider
@@ -118,6 +128,7 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
             }));
           }
         }}
+        value={[currentSearch.total_votes_min || 0, currentSearch.total_votes_max || valuesList.maxVotes]}
       />
 
       <SelectMultiple
@@ -130,9 +141,10 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
             tooltip: country.name,
           }
         ))}
-        onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, countries: selection.map(item => item.value) }));
+        onChange={(selection: string[]) => {
+          setCurrentSearch((prev) => ({ ...prev, countries: selection }));
         }}
+        selection={currentSearch.countries || []}
       />
 
       <SelectMultiple
@@ -143,20 +155,31 @@ export default function SearchBar({valuesList, initialSearch, handleSearch}: Sea
             label: getLanguageFromCode(language),
           }
         ))}
-        onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, languages: selection.map(item => item.value) }));
+        onChange={(selection: string[]) => {
+          setCurrentSearch((prev) => ({ ...prev, languages: selection }));
         }}
+        selection={currentSearch.languages || []}
       />
 
       <SelectMultiple
         label="Tags"
         itemList={valuesList.tags.map((tag) => ({ value: tag.name, tooltip: tag.description }))}
-        onChange={(selection) => {
-          setCurrentSearch((prev) => ({ ...prev, tags: selection.map(item => item.value) }));
+        onChange={(selection: string[]) => {
+          setCurrentSearch((prev) => ({ ...prev, tags: selection }));
         }}
+        selection={currentSearch.tags || []}
       />
 
       <Stack direction="row" justifyContent="center">
+        <Button
+          variant="outlined"
+          color="secondary"
+          startIcon={<Replay />}
+          onClick={() => setCurrentSearch({} as SearchParams)}
+        >
+          Reset Filters
+        </Button>
+
         <Button
           variant="contained"
           color="primary"

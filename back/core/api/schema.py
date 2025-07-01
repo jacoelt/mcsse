@@ -29,9 +29,7 @@ class SearchIn(Schema):
     players_online_max: int | None = None  # Maximum players online
     max_players_min: int | None = None  # Minimum max players
     max_players_max: int | None = None  # Maximum max players
-    added_at: str | None = (
-        None  # Date difference for when the server was added (e.g., "1d", "1w", "1m")
-    )
+    days_prior: int | None = None  # Days prior to filter by
     statuses: list[str] | None = None  # Server status
     total_votes_min: int | None = None  # Minimum total votes
     total_votes_max: int | None = None  # Maximum total votes

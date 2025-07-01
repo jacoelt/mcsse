@@ -1,20 +1,20 @@
 import { InputLabel, Slider, Stack } from "@mui/material";
 import React from "react";
 
-
-export function RangeSlider({ label, onChange, min, max, sx }: {
+interface RangeSliderProps {
   label: string;
-  onChange: (newValue: number[]) => void;
+  value: number[];
+  onChange: (value: number[]) => void;
   min: number;
   max: number;
   sx?: React.CSSProperties;
-}) {
+}
 
-  const [value, setValue] = React.useState<number[]>([min, max]);
+
+export function RangeSlider({ label, value, onChange, min, max, sx }: RangeSliderProps) {
 
   const onChangeWrapper = (_: Event, newValue: number[]) => {
     if (Array.isArray(newValue)) {
-      setValue(newValue);
       onChange(newValue);
     }
   }

@@ -24,22 +24,22 @@ function getStyles(item: string, selectedItems: readonly string[], theme: Theme)
 }
 
 
-export default function SelectMultiple({label, itemList, onChange, sx}: {label: string, itemList: SelectItem[], onChange: (selection: SelectItem[]) => void, sx?: React.CSSProperties}) {
+interface SelectMultipleProps {
+  label: string;
+  itemList: SelectItem[];
+  selection: string[];
+  onChange: (selection: string[]) => void;
+  sx?: React.CSSProperties;
+}
+
+export default function SelectMultiple({ label, itemList, onChange, selection, sx }: SelectMultipleProps) {
   const theme = useTheme();
-  const [selection, setSelection] = React.useState<string[]>([]);
 
   const onChangeWrapper = (event: SelectChangeEvent<typeof selection>) => {
     const {
       target: { value },
     } = event;
-    const valueArray = typeof value === 'string' ? value.split(',') : value;
-    setSelection(valueArray);
-    // Convert valueArray to SelectItem[]
-    const selectedItems = valueArray.map((val) => {
-      const item = itemList.find(item => item.value === val);
-      return item ? { label: item.label, value: item.value } : { label: val, value: val };
-    });
-    onChange(selectedItems);
+    onChange(typeof value === 'string' ? [value] : value);
   };
 
   const getTooltip = (value: string) => {

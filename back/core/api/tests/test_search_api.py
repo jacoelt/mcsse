@@ -209,7 +209,7 @@ def test_search_max_players(
     )
 
 
-def test_search_added_at(
+def test_search_days_prior(
     client,
     db,
     server_list,
@@ -217,7 +217,7 @@ def test_search_added_at(
     server_added_long_ago,
 ):
     search = {
-        "added_at": "31d",  # 31 days
+        "days_prior": 31,  # 31 days
         "page_size": 30,
     }
     check_search_response(
@@ -227,7 +227,7 @@ def test_search_added_at(
     )
 
     search = {
-        "added_at": "2d",  # 2 days
+        "days_prior": 2,  # 2 days
     }
     check_search_response(
         client,
@@ -237,7 +237,7 @@ def test_search_added_at(
     )
 
     search = {
-        "added_at": "366d",  # 1 year
+        "days_prior": 366,  # 1 year
         "page_size": 30,
     }
     check_search_response(

@@ -4,7 +4,7 @@ import type { ServerTag } from "./ServerTag";
 
 export type DateDelta = {
   label: string;
-  value: string; // relative time like "1d" for 1 day
+  value: number; // Value in days
 }
 
 export type SearchValuesList = {

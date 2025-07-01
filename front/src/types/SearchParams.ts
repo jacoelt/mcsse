@@ -7,7 +7,7 @@ export type SearchParams = {
   players_online_max?: number; // Maximum players online
   max_players_min?: number; // Minimum max players
   max_players_max?: number; // Maximum max players
-  added_at?: string; // Date difference for when the server was added (e.g., "1d", "1w", "1m")
+  days_prior?: number; // Number of days prior to filter by
   statuses?: ("online" | "offline" | "unknown")[]; // Server status
   total_votes_min?: number; // Minimum total votes
   total_votes_max?: number; // Maximum total votes
