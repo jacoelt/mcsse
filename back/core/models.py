@@ -6,12 +6,6 @@ import dateutil.parser
 from django.db import models, transaction
 
 
-class EditionChoices:
-    java = "java"
-    bedrock = "bedrock"
-    both = "both"
-
-
 class ServerTag(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=50, unique=True)
@@ -33,6 +27,10 @@ class Server(models.Model):
         (STATUS_OFFLINE, "Offline"),
         (STATUS_UNKNOWN, "Unknown"),
     ]
+
+    EDITION_JAVA = "java"
+    EDITION_BEDROCK = "bedrock"
+    EDITION_BOTH = "both"
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=255)
@@ -60,13 +58,13 @@ class Server(models.Model):
     @property
     def edition(self):
         if self.ip_address_java and self.ip_address_bedrock:
-            return EditionChoices.both
+            return self.EDITION_BOTH
 
         if self.ip_address_bedrock:
-            return EditionChoices.bedrock
+            return self.EDITION_BEDROCK
 
         if self.ip_address_java:
-            return EditionChoices.java
+            return self.EDITION_JAVA
 
         return "N/A"
 

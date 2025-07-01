@@ -40,3 +40,28 @@ class SearchIn(Schema):
     sort_order: str | None = "asc"  # Sort order
     page: int | None = 1  # Page number for pagination
     page_size: int | None = 10  # Number of results per page
+
+
+class StatusSchema(Schema):
+    value: str  # Status value (e.g., online, offline, unknown)
+    label: str  # Human-readable label for the status
+
+
+class DateSchema(Schema):
+    label: str  # Human-readable label for the date range
+    value: int  # Value representing the date range in days (e.g., 1 for last 24 hours, -1 for all time)
+
+
+class ValuesListsOut(Schema):
+    """
+    Schema for values list response.
+    """
+
+    versions: list[str] = []  # List of Minecraft versions
+    editions: list[dict[str, str]] = []  # List of editions with value
+    countries: list[str] = []  # List of countries
+    languages: list[str] = []  # List of languages
+    tags: list[ServerTagOut] = []  # List of tags
+    dates: list[DateSchema] = []  # List of date ranges
+    statuses: list[StatusSchema] = []  # List of server statuses
+    max_votes: int = 10000  # Maximum votes for filtering

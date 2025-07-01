@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
+from django.db import models
 from django.db.models import Q
 from ninja import NinjaAPI
 
-from core.api.schema import SearchIn, ServerOut
-from core.models import Server
+from core.api.schema import SearchIn, ServerOut, ValuesListsOut
+from core.models import Server, ServerTag
 
 
 api = NinjaAPI(auth=None, csrf=False)
@@ -111,12 +112,81 @@ def list_servers(request, data: SearchIn):
     return servers[start_index:end_index]
 
 
-@api.get("/valuesLists")
-def get_values_lists(request, response=dict):
+@api.get("/values-lists", response=ValuesListsOut)
+def get_values_lists(request):
     """
     Get values lists for filtering.
     """
+
+    versions_set = set()
+    for server in Server.objects.all():
+        if server.versions:
+            versions_set.update(
+                {version.strip() for version in server.versions.split(",")}
+            )
+
+    def version_sort_key(version):
+        try:
+            # Sort by major, minor, patch
+            parts = version.split(".")
+            return tuple(int(part) for part in parts)
+        except ValueError:
+            # If conversion fails, return a tuple that sorts last
+            return (999, 999, 999)
+
+    versions = sorted(versions_set, key=version_sort_key)
+
+    countries = {
+        country
+        for country in Server.objects.filter(country__isnull=False)
+        .values_list("country", flat=True)
+        .distinct()
+    }
+    countries = sorted(countries)
+
+    languages_set = set()
+    for server in Server.objects.all():
+        if server.languages:
+            languages_set.update(
+                {language.strip() for language in server.languages.split(",")}
+            )
+    languages = sorted(languages_set)
+
+    tags = [
+        {
+            "name": tag.name,
+            "description": tag.description,
+            "relevance": tag.relevance,
+        }
+        for tag in ServerTag.objects.all().distinct().order_by("relevance")
+    ]
+
     values_list = {
-        "TBD": ["TBD"],  # TODO
+        "versions": versions,
+        "editions": [
+            {"value": Server.EDITION_JAVA, "label": "Java"},
+            {"value": Server.EDITION_BEDROCK, "label": "Bedrock"},
+            {"value": Server.EDITION_BOTH, "label": "Java & Bedrock"},
+        ],
+        "countries": countries,
+        "languages": languages,
+        "tags": tags,
+        "dates": [
+            {"label": "Last 24 hours", "value": 1},
+            {"label": "Last 7 days", "value": 7},
+            {"label": "Last month", "value": 30},
+            {"label": "Last 3 months", "value": 90},
+            {"label": "Last 6 months", "value": 180},
+            {"label": "Last year", "value": 365},
+            {"label": "Last 5 years", "value": 1825},
+            {"label": "All time", "value": -1},  # -1 for all time
+        ],
+        "statuses": [
+            {"value": status, "label": label} for status, label in Server.STATUS_CHOICES
+        ],
+        "max_votes": Server.objects.aggregate(max_votes=models.Max("total_votes")).get(
+            "max_votes", 10000
+        )
+        or 10000,  # Default to 10000 if no servers
     }
     return values_list

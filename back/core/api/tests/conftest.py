@@ -224,3 +224,50 @@ def server_with_5tags(db, server_factory, tag_list):
         name="Test Server with 5 Tags",
         tags=[tag_list[0], tag_list[1], tag_list[2], tag_list[3], tag_list[4]],
     )
+
+
+@pytest.fixture
+def server_list_with_specific_servers(
+    db,
+    server_list,
+    server_with_version_121,
+    server_with_version_1211,
+    server_with_no_java_ip,
+    server_with_no_bedrock_ip,
+    server_with_high_players_online,
+    server_with_low_players_online,
+    server_with_high_max_players,
+    server_with_low_max_players,
+    server_added_recently,
+    server_added_long_ago,
+    server_with_status_offline,
+    server_with_status_unknown,
+    server_with_high_total_votes,
+    server_with_low_total_votes,
+    server_with_country_ca,
+    server_with_language_es,
+    server_with_3tags,
+    server_with_5tags,
+):
+
+    return [
+        *server_list,
+        server_with_version_121,
+        server_with_version_1211,
+        server_with_no_java_ip,
+        server_with_no_bedrock_ip,
+        server_with_high_players_online,
+        server_with_low_players_online,
+        server_with_high_max_players,
+        server_with_low_max_players,
+        server_added_recently,
+        server_added_long_ago,
+        server_with_status_offline,
+        server_with_status_unknown,
+        server_with_high_total_votes,
+        server_with_low_total_votes,
+        server_with_country_ca,
+        server_with_language_es,
+        server_with_3tags,
+        server_with_5tags,
+    ]

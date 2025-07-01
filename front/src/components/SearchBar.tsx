@@ -108,7 +108,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
 
       <SelectMultiple
         label="Server Status"
-        itemList={valuesList.statuses.map((status) => ({ value: status.toLowerCase(), label: status }))}
+        itemList={valuesList.statuses}
         onChange={(selection: string[]) => {
           setCurrentSearch((prev) => ({ ...prev, statuses: selection as ("online" | "offline" | "unknown")[] }));
         }}

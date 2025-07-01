@@ -21,6 +21,7 @@ export default function App() {
   const [currentViewedServer, setCurrentViewedServer] = useState<Server | null>(null);
   const [searchParams, setSearchParams] = useState<SearchParams>({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchValuesLists, setSearchValuesLists] = useState<SearchValuesList | null>(null);
 
   const pageSize = 10;
 
@@ -62,58 +63,55 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-    handleSearch({});
-  }, []);
-
   const handleLoadMore = async () => {
     if (loading) return; // Prevent loading more while already loading
     setCurrentPage(prevPage => prevPage + 1); // Increment current page
     handleSearch(searchParams, currentPage + 1);
   }
 
-  const searchValuesList: SearchValuesList = {
-    versions: ["1.20", "1.19", "1.18"],
-    editions: [
-      { value: "java", label: "Java" },
-      { value: "bedrock", label: "Bedrock" },
-      { value: "both", label: "Java & Bedrock" },
-    ],
-    countries: [
-      getCountry("US"),
-      getCountry("CA"),
-      getCountry("GB"),
-      getCountry("FR"),
-      getCountry("DE"),
-      getCountry("JP"),
-      getCountry("AU"),
-    ],
-    languages: ["en", "es", "fr", "de", "ru", "zh", "ja", "ko", "pt", "it"],
-    tags: [
-      { name: "Survival", description: "Survival mode servers", relevance: 10 },
-      { name: "Creative", description: "Creative mode servers", relevance: 10 },
-      { name: "Minigames", description: "Servers with various minigames", relevance: 30 },
-      { name: "PvP", description: "Player vs Player combat servers", relevance: 30 },
-      { name: "Roleplay", description: "Roleplaying servers", relevance: 30 },
-      { name: "Vanilla", description: "Vanilla Minecraft servers", relevance: 10 },
-    ],
-    dates: [
-      { label: "Last 7 days", value: 7 },
-      { label: "Last month", value: 30 },
-      { label: "Last 3 months", value: 90 },
-      { label: "Last 6 months", value: 180 },
-      { label: "Last year", value: 365 },
-      { label: "Last 5 years", value: 1825 },
-      { label: "All time", value: -1 }, // -1 for all time
-    ],
-    statuses: ["Online", "Offline", "Unknown"],
-    maxVotes: 10000,
-  };
+  const fetchValuesLists = async () => {
+    try {
+      const res = await fetch(`${API_HOST}/api/values-lists`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch values list");
+      const data = await res.json();
+
+      setSearchValuesLists({
+        versions: data.versions,
+        editions: data.editions,
+        countries: data.countries.map((country: any) => ({
+          ...country,
+          name: getCountry(country.code),
+        })),
+        languages: data.languages,
+        dates: data.dates,
+        statuses: data.statuses,
+        tags: data.tags,
+        maxVotes: data.max_votes
+      })
+
+    } catch (err) {
+      console.error("Error fetching values list:", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchValuesLists();
+    handleSearch({});
+  }, []);
+
 
   return (
     <Box>
       <Box>
-        <SearchBar valuesList={searchValuesList} initialSearch={searchParams} handleSearch={handleSearch} />
+        {
+          searchValuesLists &&
+          <SearchBar valuesList={searchValuesLists} initialSearch={searchParams} handleSearch={handleSearch} />
+        }
         <Box>
           <Box>
             <Typography variant="h3">Minecraft Server Explorer</Typography>
