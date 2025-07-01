@@ -21,7 +21,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
   const [currentSearch, setCurrentSearch] = useState<SearchParams>(initialSearch);
 
   return (
-    <Stack>
+    <Stack direction="column" spacing={5} sx={{ padding: 3, minHeight: "100vh" }}>
       <TextField
         variant="outlined"
         label="Search Server name or IP"
@@ -56,7 +56,6 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
       />
 
       <SelectSimple
-        sx={{ margin: 2 }}
         label="Edition"
         itemList={valuesList.editions}
         onChange={(selection) => {
@@ -68,7 +67,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
       <RangeSlider
         label="Online Players"
         min={0}
-        max={1000}
+        max={valuesList.maxOnlinePlayers}
         onChange={(value) => {
           if (Array.isArray(value)) {
             setCurrentSearch((prev) => ({
@@ -78,13 +77,13 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
             }));
           }
         }}
-        value={[currentSearch.players_online_min || 0, currentSearch.players_online_max || 1000]}
+        value={[currentSearch.players_online_min || 0, currentSearch.players_online_max || valuesList.maxOnlinePlayers]}
       />
 
       <RangeSlider
         label="Max Players"
         min={0}
-        max={1000}
+        max={valuesList.maxMaxPlayers}
         onChange={(value) => {
           if (Array.isArray(value)) {
             setCurrentSearch((prev) => ({
@@ -94,7 +93,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch }: S
             }));
           }
         }}
-        value={[currentSearch.max_players_min || 0, currentSearch.max_players_max || 1000]}
+        value={[currentSearch.max_players_min || 0, currentSearch.max_players_max || valuesList.maxMaxPlayers]}
       />
 
       <DateDeltaSelector

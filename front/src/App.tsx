@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ServerList from "./components/ServerList";
 import type { Server } from "./types/Server";
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import Footer from "./components/footer/Footer";
 import SearchBar from "./components/SearchBar";
 import AdBox from "./components/AdBox";
@@ -91,7 +91,9 @@ export default function App() {
         dates: data.dates,
         statuses: data.statuses,
         tags: data.tags,
-        maxVotes: data.max_votes
+        maxVotes: data.max_votes,
+        maxOnlinePlayers: data.max_online_players,
+        maxMaxPlayers: data.max_max_players,
       })
 
     } catch (err) {
@@ -106,36 +108,37 @@ export default function App() {
 
 
   return (
-    <Box>
-      <Box>
-        {
-          searchValuesLists &&
-          <SearchBar valuesList={searchValuesLists} initialSearch={searchParams} handleSearch={handleSearch} />
-        }
-        <Box>
-          <Box>
-            <Typography variant="h3">Minecraft Server Explorer</Typography>
-            <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
-          </Box>
-          <Box>
-            {serverFetchError ? (
-              <p className="text-red-600">{serverFetchError}</p>
-            ) : (
-              <ServerList
-                servers={servers}
-                loading={loading}
-                onViewDetails={setCurrentViewedServer}
-                onLoadMore={handleLoadMore}
-                hasMore={servers.length > 0 && servers.length % pageSize === 0}
-              />
-            )}
+    <Stack direction="column" spacing={2} sx={{ padding: 2, minHeight: "100vh" }}>
+      <Grid container spacing={3}>
+        <Grid size={3}>
+          {
+            searchValuesLists &&
+            <SearchBar valuesList={searchValuesLists} initialSearch={searchParams} handleSearch={handleSearch} />
+          }
+        </Grid>
+        <Grid size={7} sx={{ display: "flex", flexDirection: "column" }}>
+          <Typography variant="h3">Minecraft Server Explorer</Typography>
+          <Typography variant="subtitle1">Explore and join Minecraft servers easily!</Typography>
 
-            <ServerView server={currentViewedServer} onClose={() => { setCurrentViewedServer(null) }} />
-          </Box>
-        </Box>
-        <AdBox />
-      </Box>
+          {serverFetchError ? (
+            <p className="text-red-600">{serverFetchError}</p>
+          ) : (
+            <ServerList
+              servers={servers}
+              loading={loading}
+              onViewDetails={setCurrentViewedServer}
+              onLoadMore={handleLoadMore}
+              hasMore={servers.length > 0 && servers.length % pageSize === 0}
+            />
+          )}
+
+          <ServerView server={currentViewedServer} onClose={() => { setCurrentViewedServer(null) }} />
+        </Grid>
+        <Grid size={2}>
+          <AdBox />
+        </Grid>
+      </Grid>
       <Footer />
-    </Box>
+    </Stack>
   );
 }

@@ -26,7 +26,7 @@ export default function ServerList({ servers, loading, onViewDetails, onLoadMore
           {loading ? "Loading more servers..." : "No more servers to display."}
         </p>
       }
-      height="calc(100vh - 200px)"
+      height="calc(100vh - 100px)"
     >
       {servers.length === 0 ? (
         <ServerListEmptyState />

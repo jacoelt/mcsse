@@ -39,17 +39,18 @@ export function DateDeltaSelector({ label, value, onChange, valueList }: DateDel
       <Slider
         value={currentIndex}
         onChange={onChangeWrapper}
+        valueLabelDisplay="on"
         step={1}
         min={0}
         max={valueList.length - 1}
-        marks={valueList.map((item, index) => ({
-          value: index,
-          label: item.label,
+        marks={[...Array(valueList.length).keys()].map(i => ({
+          value: i,
+          label: "",
         }))}
         aria-labelledby="range-slider"
-        // scale={calculateValue}
         getAriaLabel={valueLabel}
         getAriaValueText={valueLabel}
+        valueLabelFormat={valueLabel}
       />
     </Stack>
   );

@@ -19,7 +19,7 @@ export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: stri
     <Tooltip title={tooltip} placement="top">
       <Stack
         direction="row"
-        sx={{ cursor: 'pointer', ...sx }}
+        sx={{ cursor: 'pointer', lineHeight: 1, ...sx }}
 
         // Stop Ripple Effect
         onTouchStart={(event) => event.stopPropagation()}
@@ -42,7 +42,7 @@ export default function TextCopy({ text, tooltip, textToCopy, sx }: { text: stri
             },
           }}
         >
-          <Icon sx={{ color: copied ? 'green' : 'inherit' }}>
+          <Icon sx={{ color: copied ? 'green' : 'inherit', width: '24px', height: '24px' }}>
             {copied ? <CheckCircleOutlined /> : <ContentCopy />}
           </Icon>
         </Tooltip>

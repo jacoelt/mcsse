@@ -21,6 +21,8 @@ def test_values_list(
     assert "dates" in data, "Dates list is missing"
     assert "statuses" in data, "Statuses list is missing"
     assert "max_votes" in data, "Max votes value is missing"
+    assert "max_online_players" in data, "Max online players value is missing"
+    assert "max_max_players" in data, "Max max players value is missing"
 
     assert data["versions"] == [
         "1.16",
@@ -79,3 +81,11 @@ def test_values_list(
     ], "Statuses list does not match expected values"
 
     assert data["max_votes"] == 1000, "Max votes value does not match expected value"
+
+    assert (
+        data["max_online_players"] == 99
+    ), "Max online players value does not match expected value"
+
+    assert (
+        data["max_max_players"] == 200
+    ), "Max max players value does not match expected value"

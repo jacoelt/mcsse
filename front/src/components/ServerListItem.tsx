@@ -1,7 +1,7 @@
 import type { Server } from "../types/Server";
 import type { ServerTag } from "../types/ServerTag";
 import { CancelOutlined, CheckCircleOutlined, HelpOutline } from "@mui/icons-material";
-import { Box, Card, CardActionArea, CardMedia, Chip, Icon, Stack, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardMedia, Chip, Grid, Icon, Stack, Typography } from "@mui/material";
 import { getCountry } from "../helpers/countries";
 import TextCopy from "./generic/TextCopy";
 
@@ -21,63 +21,73 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
   };
 
   return (
-    <Card sx={{ display: 'flex', direction: 'column', padding: 2, marginBottom: 2, cursor: 'pointer' }} onClick={() => onViewDetails(server)}>
-      <CardActionArea>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-              {server.name || "Unknown Server"}
-            </Typography>
-            <Typography variant="h6" title={country.name}>{country.flag}</Typography>
-          </Box>
+    <Card sx={{ display: 'flex', direction: 'column', margin: 2, cursor: 'pointer' }} onClick={() => onViewDetails(server)}>
+      <CardActionArea sx={{ padding: 2, height: '170px' }}>
+        <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Grid size={5} container direction="row">
+            <Grid size={11}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                {server.name || "Unknown Server"}
+              </Typography>
+            </Grid>
+            <Grid size={1}>
+              <Typography variant="h6" title={country.name}>{country.flag}</Typography>
+            </Grid>
+          </Grid>
 
-          <Stack>
-            {server.ip_address_java && (
-              <TextCopy text={server.ip_address_java} tooltip="Java IP Address" />
-            )}
-            {server.ip_address_bedrock && (
-              <TextCopy text={server.ip_address_bedrock} tooltip="Bedrock IP Address" />
-            )}
-          </Stack>
-
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Grid size={4}>
+            <Stack>
+              {server.ip_address_java && (
+                <TextCopy text={server.ip_address_java} tooltip="Java IP Address" />
+              )}
+              {server.ip_address_bedrock && (
+                <TextCopy text={server.ip_address_bedrock} tooltip="Bedrock IP Address" />
+              )}
+            </Stack>
+          </Grid>
+          <Grid size={1} sx={{ display: 'flex', alignItems: 'center' }}>
             <Icon sx={{ color: server.status === 'online' ? 'green' : server.status === 'offline' ? 'red' : 'gray' }}>
               {statusIcons[server.status] || <HelpOutline />}
             </Icon>
             <Typography variant="body2" sx={{ marginLeft: 1 }}>
               {server.status.charAt(0).toUpperCase() + server.status.slice(1)}
             </Typography>
-          </Box>
-          <Box>
+          </Grid>
+          <Grid size={2}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {server.versions || "Unknown Version"}
               {server.edition === "java" ? " (Java)" : server.edition === "bedrock" ? " (Bedrock)" : " (Java + Bedrock)"}
             </Typography>
-          </Box>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Stack sx={{ display: 'flex', direction: 'column' }}>
-            <CardMedia component="img" image={server.banner || "/default-banner.png"} alt={server.name} sx={{ width: 460, height: 50, objectFit: 'cover', borderRadius: 1, marginTop: 1 }} />
+          </Grid>
+        </Grid>
+        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Grid size={5} direction="column">
+            <CardMedia
+              component="img"
+              image={server.banner}
+              alt={server.name}
+              sx={{ width: "100%", borderRadius: 1, marginTop: 1 }}
+            />
             <Stack direction="row">
               {server.tags.sort((a: ServerTag, b: ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>
                 <Chip color="primary" size="small" label={tag.name} key={tag.name} sx={{ margin: '2px' }} />
               )}
             </Stack>
-          </Stack>
-          <Box>
-            <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: 1 }}>
+          </Grid>
+          <Grid size={5} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: '75px', flexGrow: 1, marginLeft: 2 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: 1, whiteSpace: 'pre-line' }}>
               {server.description || "No description available"}
             </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+          </Grid>
+          <Grid size={2} direction="column" sx={{ textAlign: 'left', marginLeft: 2 }}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               Players: {server.players_online}/{server.max_players}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               Votes: {server.total_votes}
             </Typography>
-          </Box>
-        </Box>
+          </Grid>
+        </Grid>
       </CardActionArea>
     </Card>
   );

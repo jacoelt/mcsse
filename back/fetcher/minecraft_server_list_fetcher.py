@@ -98,9 +98,9 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         if not server_data_block:
             return server
 
-        server.ip_address_java = server_data_block.find(
-            name="th", string="Java IP:"
-        ).next_sibling.get_text(strip=True)
+        java_ip_header = server_data_block.find(name="th", string="Java IP:")
+        if java_ip_header:
+            server.ip_address_java = java_ip_header.next_sibling.get_text(strip=True)
 
         bedrock_ip_header = server_data_block.find(name="th", string="Bedrock IP:")
         if bedrock_ip_header:
@@ -112,13 +112,12 @@ class MinecraftServerListFetcher(ServerFetcherBase):
                 f"{bedrock_ip}:{bedrock_port}" if bedrock_ip and bedrock_port else None
             )
 
-        server.banner = (
-            server_data_block.select_one("img.serverLogoSmall")["src"]
-            .replace("/small", "")
-            .strip()
-        )
-        if server.banner.startswith("//"):
-            server.banner = "https:" + server.banner
+        banner_img = server_data_block.select_one("img.serverLogoSmall")
+        if banner_img:
+            server.banner = banner_img.get("src", "").replace("/small", "").strip()
+
+            if server.banner.startswith("//"):
+                server.banner = "https:" + server.banner
 
         server.versions = [
             server_data_block.find(

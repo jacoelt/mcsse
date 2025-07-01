@@ -17,4 +17,6 @@ export type SearchValuesList = {
   statuses: Status[];
   tags: ServerTag[];
   maxVotes: number;
+  maxOnlinePlayers: number;
+  maxMaxPlayers: number;
 }

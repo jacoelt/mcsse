@@ -65,3 +65,5 @@ class ValuesListsOut(Schema):
     dates: list[DateSchema] = []  # List of date ranges
     statuses: list[StatusSchema] = []  # List of server statuses
     max_votes: int = 10000  # Maximum votes for filtering
+    max_online_players: int = 1000  # Maximum online players for filtering
+    max_max_players: int = 1000  # Maximum max players for filtering
