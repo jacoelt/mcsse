@@ -29,6 +29,9 @@ export default function App() {
 
   const handleSearch = async (search: SearchParams, page?: number) => {
     setSearchParams(search);
+    if (page === undefined) {
+      setServers([]); // Clear server list for new search
+    }
 
     try {
       setLoading(true);
