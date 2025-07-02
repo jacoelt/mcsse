@@ -114,5 +114,8 @@ export function getLanguageFromCode(language_code: string): string {
 }
 
 export function getLanguagesFromCode(language_codes: string[]): string[] {
+  if (!language_codes || language_codes.length === 0) {
+    return ["Unknown Language"];
+  }
   return language_codes.map(lang => getLanguageFromCode(lang)).filter(lang => lang !== "Unknown Language");
 }

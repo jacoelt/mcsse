@@ -1,7 +1,7 @@
 import type { Server } from "../types/Server";
 import type { ServerTag } from "../types/ServerTag";
 import { CancelOutlined, CheckCircleOutlined, HelpOutline } from "@mui/icons-material";
-import { Box, Card, CardActionArea, CardMedia, Chip, Grid, Icon, Stack, Typography } from "@mui/material";
+import { Card, CardActionArea, CardMedia, Chip, Grid, Icon, Stack, Typography } from "@mui/material";
 import { getCountry } from "../helpers/countries";
 import TextCopy from "./generic/TextCopy";
 
@@ -74,7 +74,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
               )}
             </Stack>
           </Grid>
-          <Grid size={5} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: '75px', flexGrow: 1, marginLeft: 2 }}>
+          <Grid size={4} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: '75px', flexGrow: 1, marginLeft: 2 }}>
             <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: 1, whiteSpace: 'pre-line' }}>
               {server.description || "No description available"}
             </Typography>

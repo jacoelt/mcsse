@@ -184,21 +184,17 @@ def get_values_lists(request):
         "statuses": [
             {"value": status, "label": label} for status, label in Server.STATUS_CHOICES
         ],
-        "max_votes": Server.objects.aggregate(max_votes=models.Max("total_votes")).get(
-            "max_votes",
-            10000,
-        ),
+        "max_votes": Server.objects.aggregate(
+            max_votes=models.Max("total_votes"),
+        ).get("max_votes")
+        or 10000,
         "max_online_players": Server.objects.aggregate(
-            max_online_players=models.Max("players_online")
-        ).get(
-            "max_online_players",
-            1000,
-        ),
+            max_online_players=models.Max("players_online"),
+        ).get("max_online_players")
+        or 1000,
         "max_max_players": Server.objects.aggregate(
-            max_max_players=models.Max("max_players")
-        ).get(
-            "max_max_players",
-            1000,
-        ),
+            max_max_players=models.Max("max_players"),
+        ).get("max_max_players")
+        or 1000,
     }
     return values_list

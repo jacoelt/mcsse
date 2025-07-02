@@ -66,7 +66,9 @@ class WebpageGetter:
         cache_only: bool = False,
     ) -> str:
         # Check if the URL is cached
-        cached_content = await asyncio.to_thread(lambda: cache.get(url))
+        cached_content = await asyncio.to_thread(
+            lambda: cache.get(url, ignore_expiry=True)
+        )
         if cached_content:
             print(f"Using cached content for {url}")
             return cached_content

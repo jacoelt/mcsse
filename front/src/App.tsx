@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ServerList from "./components/ServerList";
 import type { Server } from "./types/Server";
-import { Drawer, Grid, IconButton, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Drawer, IconButton, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Footer from "./components/footer/Footer";
 import SearchBar from "./components/SearchBar";
 import AdBox from "./components/AdBox";
@@ -9,7 +9,7 @@ import type { SearchParams } from "./types/SearchParams";
 import type { SearchValuesList } from "./types/SearchValuesList";
 import { getCountry } from "./helpers/countries";
 import { ServerView } from "./components/ServerView";
-import { Close, Height, SearchOutlined } from "@mui/icons-material";
+import { Close, SearchOutlined } from "@mui/icons-material";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
@@ -114,7 +114,7 @@ export default function App() {
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
 
   return (
-    <Stack direction="column">
+    <Stack direction="column" spacing={2} sx={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
       <Stack spacing={3}
         sx={{
           display: "flex",
@@ -202,9 +202,6 @@ export default function App() {
               onViewDetails={setCurrentViewedServer}
               onLoadMore={handleLoadMore}
               hasMore={servers.length > 0 && servers.length % pageSize === 0}
-              sx={{
-                height: "calc(100vh - 200px)",
-              }}
             />
           )}
 

@@ -1,10 +1,8 @@
-
-
 import type { Server } from "../types/Server";
 import ServerListEmptyState from "./ServerListEmptyState";
-import ServerListItemSkeleton from "./ServerListItemSkeleton";
 import ServerListItem from "./ServerListItem";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 
 interface ServerListProps {
   servers: Server[];
@@ -21,15 +19,24 @@ export default function ServerList({ servers, loading, onViewDetails, onLoadMore
       dataLength={servers.length}
       next={onLoadMore}
       hasMore={hasMore}
-      loader={<ServerListItemSkeleton />}
-      endMessage={
-        <p className="text-center text-gray-500">
-          {loading ? "Loading more servers..." : "No more servers to display."}
-        </p>
+      loader={
+        <Stack direction="row" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 4 }}>
+          <CircularProgress /> Loading more servers...
+        </Stack>
       }
-      style={{ ...sx }}
+      endMessage={
+        <Typography variant="body1" sx={{ textAlign: 'center', marginTop: 4, color: 'text.secondary' }}>
+          {
+            loading
+              ? (<><CircularProgress /> Loading more servers...</>)
+              : "No more servers to display."
+          }
+        </Typography>
+      }
+      height="calc(100vh - 200px)"
+      style={{ overflowY: 'auto', ...sx }}
     >
-      {servers.length === 0 ? (
+      {!loading && servers.length === 0 ? (
         <ServerListEmptyState />
       ) : (
         servers.map((server) => (

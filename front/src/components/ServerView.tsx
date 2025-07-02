@@ -28,7 +28,7 @@ export function ServerView({ server, onClose }: ServerViewProps) {
         scroll="paper"
       >
         <DialogTitle>
-          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h4" component="p" sx={{ fontWeight: 'bold' }}>
             {server.name}
           </Typography>
         </DialogTitle>
@@ -142,7 +142,7 @@ export function ServerView({ server, onClose }: ServerViewProps) {
               <Typography variant="body1">
                 Total Votes
                 <Tooltip title="Total number of votes this server has received accross different voting websites" placement="top">
-                  <InfoOutline fontSize="xsmall" />
+                  <InfoOutline fontSize="small" />
                 </Tooltip>
               </Typography>
             </Grid>

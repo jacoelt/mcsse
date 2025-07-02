@@ -10,7 +10,7 @@ export default function Footer({ sx }: { sx?: React.CSSProperties }) {
   const [isTosVisible, setIsTosVisible] = useState(false)
   const [isPrivacyVisible, setIsPrivacyVisible] = useState(false)
   // const [ isCookiesVisible, setIsCookiesVisible ] = useState(false)
-  const [isContactVisible, setIsContactVisible] = useState(false)
+  // const [isContactVisible, setIsContactVisible] = useState(false)
   const [isAboutVisible, setIsAboutVisible] = useState(false)
 
   // const [contactSubject, setContactSubject] = useState("")

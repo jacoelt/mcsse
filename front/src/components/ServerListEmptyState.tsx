@@ -1,9 +1,9 @@
+import { Typography } from "@mui/material";
 
 export default function ServerListEmptyState() {
   return (
-    <div className="text-center text-gray-500 py-12">
-      <p className="text-lg font-medium">Aucun serveur trouvé</p>
-      <p className="text-sm">Réessaie plus tard ou ajuste tes filtres.</p>
-    </div>
+    <Typography variant="body1" sx={{ textAlign: 'center', marginTop: 4, color: 'text.secondary' }}>
+      No servers found. Try adjusting your search criteria or check back later.
+    </Typography>
   );
 }

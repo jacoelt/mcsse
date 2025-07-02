@@ -43,6 +43,14 @@ async def run():
 
 def save_to_database(server_list):
     for server in server_list:
+        if (
+            not server.name
+            or server.name.strip() == ""
+            or (server.ip_address_java is None and server.ip_address_bedrock is None)
+        ):
+            print("Skipping server with no name.")
+            continue
+
         for tag in server.tags:
             if not ServerTag.objects.filter(name=tag.name).exists():
                 print(f"Saving new tag: {tag.name}")
