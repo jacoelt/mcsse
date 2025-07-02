@@ -85,10 +85,7 @@ export default function App() {
       setSearchValuesLists({
         versions: data.versions,
         editions: data.editions,
-        countries: data.countries.map((country: any) => ({
-          ...country,
-          name: getCountry(country.code),
-        })),
+        countries: data.countries.map((country: string) => getCountry(country)),
         languages: data.languages,
         dates: data.dates,
         statuses: data.statuses,
