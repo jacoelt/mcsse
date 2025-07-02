@@ -31,6 +31,7 @@ export default function App() {
     setSearchParams(search);
     if (page === undefined) {
       setServers([]); // Clear server list for new search
+      setCurrentPage(1); // Reset current page to 1
     }
 
     try {
