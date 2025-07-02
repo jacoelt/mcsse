@@ -28,7 +28,7 @@ def list_servers(request, data: SearchIn):
     if search_params.versions:
         subquery = Q()
         for version in search_params.versions:
-            subquery |= Q(versions__regex=rf"\b{version}\b")
+            subquery |= Q(versions__icontains=version)
 
         query &= subquery
 
