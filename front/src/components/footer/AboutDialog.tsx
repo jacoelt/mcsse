@@ -27,13 +27,13 @@ export default function AboutDialog({ isVisible, setIsVisible }: AboutDialogProp
         <Box mb={2}>
           <Typography variant="body1" gutterBottom>
             This site is a community-driven search engine for Minecraft servers.
-            Our goal is to make it easier to discover, compare, and explore the
+            My goal is to make it easier to discover, compare, and explore the
             best servers — without the clutter or limitations of traditional
             listings.
           </Typography>
           <Typography variant="body1" gutterBottom>
             Server data is collected from public sources and refreshed regularly.
-            We aim to provide accurate and up-to-date information, but please
+            I aim to provide accurate and up-to-date information, but please
             report any issues or outdated listings using the contact form.
           </Typography>
           <Typography variant="body1" gutterBottom>

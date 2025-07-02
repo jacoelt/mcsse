@@ -1,9 +1,17 @@
+import environ
 from fetcher.helpers.countries import get_country_code
 from fetcher.fetched_server import FetchedServer
 from fetcher.helpers.webpage_getter import WebpageGetter
 from fetcher.server_fetcher_base import ServerFetcherBase
 from core.models import ServerTag
 from bs4 import BeautifulSoup
+
+
+env = environ.Env(
+    USE_CACHE_ONLY=(bool, False),  # Default to False if not set
+)
+
+USE_CACHE_ONLY = env("USE_CACHE_ONLY")
 
 
 class MinecraftServerListFetcher(ServerFetcherBase):
@@ -27,7 +35,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             wait_for_class="serverdatadiv1",
             delay_between_page_loads=0,
             max_concurrent_requests=10,
-            cache_only=True,
+            cache_only=USE_CACHE_ONLY,
         )
 
         # Parse the content to extract server list
@@ -61,7 +69,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             wait_for_class="serverdatadiv",
             delay_between_page_loads=0,
             max_concurrent_requests=10,
-            cache_only=True,
+            cache_only=USE_CACHE_ONLY,
         )
 
         servers = []

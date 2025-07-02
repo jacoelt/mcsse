@@ -6,14 +6,14 @@ interface TosDialogProps {
   setIsVisible: (isVisible: boolean) => void;
 }
 
-export default function TosDialog({ isVisible, setIsVisible } : TosDialogProps) {
+export default function TosDialog({ isVisible, setIsVisible }: TosDialogProps) {
   return (
     <Dialog
-        open={isVisible}
-        onClose={() => setIsVisible(false)}
-        maxWidth="md"
-        fullWidth
-        scroll="paper"
+      open={isVisible}
+      onClose={() => setIsVisible(false)}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
     >
       <DialogTitle>
         Terms of Service
@@ -90,7 +90,7 @@ export default function TosDialog({ isVisible, setIsVisible } : TosDialogProps) 
           8. Contact
         </Typography>
         <Typography variant="body1">
-          If you have any questions about these Terms, please contact us using the contact form on our website.
+          If you have any questions about these Terms, please contact us using the link on the website.
         </Typography>
       </DialogContent>
       <DialogActions>
