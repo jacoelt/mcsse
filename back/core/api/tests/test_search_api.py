@@ -28,16 +28,17 @@ def test_search_result_fields(client, db, simple_server):
     for server in data:
         assert "name" in server
         assert "ip_address_java" in server or "ip_address_bedrock" in server
-        assert "versions" in server
-        assert "players_online" in server
-        assert "max_players" in server
-        assert "added_at" in server
-        assert "status" in server
-        assert "total_votes" in server
-        assert "country" in server
-        assert "languages" in server
-        assert "website" in server
-        assert "discord" in server
+        assert "versions" in server, "Versions should be present"
+        assert "edition" in server, "Edition should be present"
+        assert "players_online" in server, "Players online should be present"
+        assert "max_players" in server, "Max players should be present"
+        assert "added_at" in server, "Added at should be present"
+        assert "status" in server, "Status should be present"
+        assert "total_votes" in server, "Total votes should be present"
+        assert "country" in server, "Country should be present"
+        assert "languages" in server, "Languages should be present"
+        assert "website" in server, "Website should be present"
+        assert "discord" in server, "Discord should be present"
         assert isinstance(server["tags"], list)
 
 

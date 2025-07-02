@@ -38,8 +38,6 @@ export function SelectSimple({ label, itemList, selection, onChange, sx }: Selec
         label={label}
         onChange={onChangeWrapper}
       >
-        <MenuItem value="" sx={{ fontStyle: "italic" }}>None</MenuItem>
-
         {itemList.map((item) => (
           <MenuItem
             key={item.value}

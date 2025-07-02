@@ -62,7 +62,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
         onChange={(selection) => {
           setCurrentSearch((prev) => ({ ...prev, edition: selection }));
         }}
-        selection={currentSearch.edition || ""}
+        selection={currentSearch.edition || "both"}
       />
 
       <RangeSlider

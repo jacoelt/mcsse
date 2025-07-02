@@ -11,6 +11,7 @@ class ServerTagOut(ModelSchema):
 
 class ServerOut(ModelSchema):
     tags: list[ServerTagOut] = []
+    edition: str | None = None
 
     class Meta:
         model = Server

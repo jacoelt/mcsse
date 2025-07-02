@@ -19,7 +19,7 @@ export function ServerView({ server, onClose }: ServerViewProps) {
   const dataTableLabelWidth = 6;
 
   return (
-    // If no server is provided, return null or a placeholder
+    // If no server is provided, return null
     !server ? <></> :
       <Dialog
         open={!!server}
