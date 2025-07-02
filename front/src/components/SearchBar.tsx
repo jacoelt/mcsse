@@ -7,7 +7,7 @@ import type { SearchValuesList } from "../types/SearchValuesList";
 import { SelectSimple } from "./generic/SelectSimple";
 import { RangeSlider } from "./generic/RangeSlider";
 import { DateDeltaSelector } from "./generic/DateDeltaSelector";
-import { getLanguageFromCode } from "../helpers/languages";
+// import { getLanguageFromCode } from "../helpers/languages";
 
 
 interface SearchBarProps {
@@ -147,6 +147,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
         selection={currentSearch.countries || []}
       />
 
+      {/* No language is available from the minecraft server list we fetch
       <SelectMultiple
         label="Languages"
         itemList={valuesList.languages.map((language) => (
@@ -159,7 +160,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
           setCurrentSearch((prev) => ({ ...prev, languages: selection }));
         }}
         selection={currentSearch.languages || []}
-      />
+      /> */}
 
       <SelectMultiple
         label="Tags"
