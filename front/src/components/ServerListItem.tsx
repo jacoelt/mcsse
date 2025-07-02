@@ -26,7 +26,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
         <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Grid size={5} container direction="row">
             <Grid size={11}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={server.name}>
                 {server.name || "Unknown Server"}
               </Typography>
             </Grid>
@@ -66,7 +66,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
               component="img"
               image={server.banner}
               alt={server.name}
-              sx={{ width: "100%", borderRadius: 1, marginTop: 1 }}
+              sx={{ width: "450px", height: "60px", borderRadius: 1, marginTop: 1 }}
             />
             <Stack direction="row" sx={{ flexWrap: 'wrap', marginTop: 1 }}>
               {server.tags.sort((a: ServerTag, b: ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>
