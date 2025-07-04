@@ -66,7 +66,7 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
               component="img"
               image={server.banner}
               alt={server.name}
-              sx={{ width: "450px", height: "60px", borderRadius: 1, marginTop: 1 }}
+              sx={{ maxWidth: "450px", maxHeight: "60px", borderRadius: 1, marginTop: 1 }}
             />
             <Stack direction="row" sx={{ flexWrap: 'wrap', marginTop: 1 }}>
               {server.tags.sort((a: ServerTag, b: ServerTag) => a.relevance - b.relevance).map((tag: ServerTag) =>

@@ -1,6 +1,7 @@
 import { Box, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select, Tooltip, useTheme, type SelectChangeEvent, type Theme } from "@mui/material";
 import React from "react";
 import type { SelectItem } from "../../types/SelectItem";
+import { Cancel } from "@mui/icons-material";
 
 
 const ITEM_HEIGHT = 48;
@@ -64,7 +65,20 @@ export default function SelectMultiple({ label, itemList, onChange, selection, s
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value) => (
               <Tooltip key={value} title={getTooltip(value)} placement="top">
-                <Chip key={value} label={getChip(value)} />
+                <Chip
+                  key={value}
+                  label={getChip(value)}
+                  deleteIcon={
+                    <Cancel
+                      onMouseDown={(event) => event.stopPropagation()} // Prevents the select from catching the click event when clicking the delete icon
+                    />
+                  }
+                  onDelete={
+                    () => {
+                      onChange(selection.filter(item => item !== value));
+                    }
+                  }
+                />
               </Tooltip>
             ))}
           </Box>
