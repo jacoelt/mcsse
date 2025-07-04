@@ -81,10 +81,10 @@ export default function ServerListItem({ server, onViewDetails }: ServerListItem
           </Grid>
           <Grid size={2} direction="column" sx={{ textAlign: 'left', marginLeft: 2 }}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Players: {server.players_online}/{server.max_players}
+              Players: {server.players_online.toLocaleString()} / {server.max_players.toLocaleString()}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Votes: {server.total_votes}
+              Votes: {server.total_votes.toLocaleString()}
             </Typography>
           </Grid>
         </Grid>
