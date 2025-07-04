@@ -26,6 +26,12 @@ export default function AboutDialog({ isVisible, setIsVisible }: AboutDialogProp
       <DialogContent>
         <Box mb={2}>
           <Typography variant="body1" gutterBottom>
+            Most Minecraft server listing available online are used as voting platform for servers, and list servers by popularity.<br />
+            They usually offer very little capabilities in terms of search for players.<br />
+            This project aims to get lists of servers from various publicly available websites and provide actually
+            usable search for players looking for their next adventure.
+          </Typography>
+          <Typography variant="body1" gutterBottom>
             This site is a community-driven search engine for Minecraft servers.
             My goal is to make it easier to discover, compare, and explore the
             best servers — without the clutter or limitations of traditional
