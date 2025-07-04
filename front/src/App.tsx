@@ -126,7 +126,8 @@ export default function App() {
           position: "relative",
         }}
       >
-        {!isLargeScreen && !isSearchBarVisible && (
+
+        {!isLargeScreen && (
           <IconButton
             onClick={() => setIsSearchBarVisible(true)}
             sx={{
@@ -146,7 +147,7 @@ export default function App() {
         <Drawer
           anchor="left"
           open={isLargeScreen || isSearchBarVisible}
-          onClose={() => setCurrentViewedServer(null)}
+          onClose={() => setIsSearchBarVisible(false)}
           variant={isLargeScreen ? "persistent" : "temporary"}
           sx={{
             width: `${searchBarWidth}px`,
@@ -158,22 +159,6 @@ export default function App() {
 
           }}
         >
-          {!isLargeScreen && (
-            <IconButton
-              onClick={() => setIsSearchBarVisible(false)}
-              sx={{
-                position: "fixed",
-                top: 16,
-                right: 16,
-                zIndex: 1000,
-                backgroundColor: "white",
-                boxShadow: 2,
-                borderRadius: "50%",
-              }}
-            >
-              <Close />
-            </IconButton>
-          )}
           {
             searchValuesLists &&
             <SearchBar
@@ -187,7 +172,6 @@ export default function App() {
           sx={{
             display: "flex",
             flexDirection: "column",
-            // paddingLeft: isLargeScreen ? `${searchBarWidth}px` : 0,
             width: isLargeScreen ? `calc(100% - ${searchBarWidth}px - 100px)` : `calc(100% - 100px)`,
           }}
         >
