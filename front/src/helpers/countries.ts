@@ -248,6 +248,7 @@ const COUNTRY_MAPPING: Record<string, Country> = {
   'UA': {name : 'Ukraine', code: 'UA', flag: countryCodeToFlag('UA')},
   'AE': {name : 'United Arab Emirates (the)', code: 'AE', flag: countryCodeToFlag('AE')},
   'GB': {name : 'United Kingdom of Great Britain and Northern Ireland (the)', code: 'GB', flag: countryCodeToFlag('GB')},
+  'UK': {name : 'United Kingdom of Great Britain (the)', code: 'UK', flag: countryCodeToFlag('GB')},
   'UM': {name : 'United States Minor Outlying Islands (the)', code: 'UM', flag: countryCodeToFlag('UM')},
   'US': {name : 'United States of America (the)', code: 'US', flag: countryCodeToFlag('US')},
   'UY': {name : 'Uruguay', code: 'UY', flag: countryCodeToFlag('UY')},
@@ -263,14 +264,20 @@ const COUNTRY_MAPPING: Record<string, Country> = {
   'ZM': {name : 'Zambia', code: 'ZM', flag: countryCodeToFlag('ZM')},
   'ZW': {name : 'Zimbabwe', code: 'ZW', flag: countryCodeToFlag('ZW')},
   'AX': {name : 'Åland Islands', code: 'AX', flag: countryCodeToFlag('AX')},
-
+  'EU': {name : 'European Union', code: 'EU', flag: countryCodeToFlag('EU')},
 }
 
 export function getCountry(countryCode: string): Country {
   const defaultCountry: Country = {name: 'Unknown Country', code: "XX", flag: '🏳️'}
   if (!countryCode || typeof countryCode !== 'string') {
+    console.warn('Invalid country code provided, returning default country.');
     return defaultCountry;
   }
 
-  return COUNTRY_MAPPING[countryCode.toUpperCase()] || defaultCountry;
+  const country = COUNTRY_MAPPING[countryCode.toUpperCase()];
+  if (!country) {
+    console.warn(`Country code "${countryCode}" not found in mapping.`);
+    return defaultCountry;
+  }
+  return country;
 }
