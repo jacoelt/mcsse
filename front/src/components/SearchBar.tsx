@@ -32,6 +32,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
           setCurrentSearch((prev) => ({ ...prev, query }));
         }}
         onKeyDown={(e) => {
+          e.preventDefault();
           if (e.key === "Enter") {
             handleSearch(currentSearch);
           }

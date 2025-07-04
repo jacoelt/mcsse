@@ -23,11 +23,16 @@ export default function App() {
   const [searchParams, setSearchParams] = useState<SearchParams>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValuesLists, setSearchValuesLists] = useState<SearchValuesList | null>(null);
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
+
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
 
   const pageSize = 10;
   const searchBarWidth = 500;
 
   const handleSearch = async (search: SearchParams, page?: number) => {
+    setIsSearchBarVisible(false);
     setSearchParams(search);
     if (page === undefined) {
       setServers([]); // Clear server list for new search
@@ -109,11 +114,6 @@ export default function App() {
     handleSearch({});
   }, []);
 
-  const theme = useTheme();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
-
-  const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
-
   return (
     <Stack direction="column" spacing={2} sx={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
       <Stack spacing={3}
@@ -126,7 +126,7 @@ export default function App() {
           position: "relative",
         }}
       >
-        {!isLargeScreen && (
+        {!isLargeScreen && !isSearchBarVisible && (
           <IconButton
             onClick={() => setIsSearchBarVisible(true)}
             sx={{
@@ -179,7 +179,7 @@ export default function App() {
             <SearchBar
               valuesList={searchValuesLists}
               initialSearch={searchParams}
-              handleSearch={(search) => { setIsSearchBarVisible(false); handleSearch(search) }}
+              handleSearch={(search) => { handleSearch(search) }}
             />
           }
         </Drawer>
