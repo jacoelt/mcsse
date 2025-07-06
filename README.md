@@ -1,4 +1,8 @@
 # Minecraft Server Explorer
+
+Website is available at https://minecraft-server-explorer.onrender.com
+
+
 ## Why?
 Most Minecraft server listing available online are used as voting platform for servers, and list servers by popularity.
 They usually offer very little capabilities in terms of search for players.
