@@ -144,3 +144,54 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom user settings
 SUPER_USER_USERNAME = env("SUPER_USER_USERNAME")
 SUPER_USER_PASSWORD = env("SUPER_USER_PASSWORD")
+
+# Cache settings
+USE_CACHE = env.bool("USE_CACHE", default=False)
+CACHE_EXPIRY = env.int("CACHE_EXPIRY", default=0)  # Default to 24 hours
+USE_CACHE_ONLY = env.bool("USE_CACHE_ONLY", default=False)
+
+# Logging settings
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {module} {message}",
+            "style": "{",
+        },
+    },
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+            "level": "INFO",
+        },
+        "core": {
+            "handlers": ["console"],
+            "propagate": True,
+            "level": (env("LOG_LEVEL").upper() if env("LOG_LEVEL") else "WARNING"),
+        },
+        "fetcher": {
+            "handlers": ["console"],
+            "propagate": True,
+            "level": (env("LOG_LEVEL").upper() if env("LOG_LEVEL") else "WARNING"),
+        },
+    },
+}

@@ -1,6 +1,7 @@
 class FetchedServer:
     """Represents a Minecraft server fetched from a server list."""
 
+    id: str = None
     name: str = None
     description: str = None
     ip_address_java: str = None

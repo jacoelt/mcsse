@@ -1,4 +1,4 @@
-import environ
+import logging
 from fetcher.helpers.countries import get_country_code
 from fetcher.fetched_server import FetchedServer
 from fetcher.helpers.webpage_getter import WebpageGetter
@@ -7,11 +7,7 @@ from core.models import ServerTag
 from bs4 import BeautifulSoup
 
 
-env = environ.Env(
-    USE_CACHE_ONLY=(bool, False),  # Default to False if not set
-)
-
-USE_CACHE_ONLY = env("USE_CACHE_ONLY")
+logger = logging.getLogger(__name__)
 
 
 class MinecraftServerListFetcher(ServerFetcherBase):
@@ -26,7 +22,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
 
         # Get server list webpage content
         webpage_getter = WebpageGetter()
-        print("Fetching pages content...")
+        logger.info("Fetching pages content...")
         pages_content = await webpage_getter.get(
             urls=[
                 self.server_list_url.format(page_number=page_number)
@@ -35,11 +31,10 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             wait_for_class="serverdatadiv1",
             delay_between_page_loads=0,
             max_concurrent_requests=10,
-            cache_only=USE_CACHE_ONLY,
         )
 
         # Parse the content to extract server list
-        print("Parsing server list content...")
+        logger.info("Parsing server list content...")
         server_ids = set()
         for page_content in pages_content:
             soup = BeautifulSoup(page_content, "html.parser")
@@ -52,9 +47,9 @@ class MinecraftServerListFetcher(ServerFetcherBase):
                     server_id = href.split("/")[-2]
                     server_ids.add(server_id)
                 else:
-                    print("No href found in the server link, skipping.")
+                    logger.warning("No href found in the server link, skipping.")
 
-        print(f"Found {len(server_ids)} unique server IDs.")
+        logger.info(f"Found {len(server_ids)} unique server IDs.")
 
         # For each server in the list:
         # Get server details webpage content from the individual server URL
@@ -69,9 +64,9 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             wait_for_class="serverdatadiv",
             delay_between_page_loads=0,
             max_concurrent_requests=10,
-            cache_only=USE_CACHE_ONLY,
         )
 
+        logger.info("Parsing individual server content...")
         servers = []
         error_list = []
         for server_content in server_pages:
@@ -81,7 +76,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
             try:
                 server = self._parse_server_content(server_content)
             except Exception as e:
-                print(f"Error parsing server content: {e}")
+                logger.critical(f"Error parsing server content: {e}")
                 error_list.append(e)
                 continue
 
@@ -93,6 +88,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
                 error_list,
             )
 
+        logger.info(f"Parsed {len(servers)} servers successfully.")
         return servers
 
     def _parse_server_content(self, server_content: str) -> list[FetchedServer]:
@@ -233,7 +229,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
                 description = description_block_contents[i].get_text(strip=True)
 
                 if description:
-                    return description
+                    return description.replace("<br>", "\n")
 
                 # If we find an empty <p> tag and it's the first one,
                 # we set the start index to capture the description later

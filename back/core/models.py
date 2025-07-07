@@ -5,6 +5,8 @@ import dateutil
 import dateutil.parser
 from django.db import models, transaction
 
+from fetcher.fetched_server import FetchedServer
+
 
 class ServerTag(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -55,6 +57,24 @@ class Server(models.Model):
 
     tags = models.ManyToManyField(ServerTag, related_name="servers", blank=True)
 
+    list_of_updated_fields = [
+        "name",
+        "description",
+        "ip_address_java",
+        "ip_address_bedrock",
+        "versions",
+        "players_online",
+        "max_players",
+        "banner",
+        "added_at",
+        "status",
+        "total_votes",
+        "country",
+        "languages",
+        "website",
+        "discord",
+    ]
+
     @property
     def edition(self):
         if self.ip_address_java and self.ip_address_bedrock:
@@ -71,32 +91,67 @@ class Server(models.Model):
     def __str__(self):
         return f"{self.name} ({self.ip_address_java or self.ip_address_bedrock})"
 
-    def updateData(self, new_data: "FetchedServer") -> None:  # type: ignore
+    @classmethod
+    def from_fetched_server(cls, fetched_server: FetchedServer) -> "Server":
+        """
+        Create a Server instance from a fetched server data.
+        """
+        server_instance = cls()
+        server_instance.updateData(fetched_server)
+        return server_instance
+
+    def updateData(self, new_data: FetchedServer) -> None:
         """
         Update the server data with new data from a fetcher.
         """
-        self.name = new_data.name
-        self.description = new_data.description
-        self.ip_address_java = new_data.ip_address_java
-        self.ip_address_bedrock = new_data.ip_address_bedrock
-        self.versions = ",".join(new_data.versions)
-        self.players_online = new_data.players_online
-        self.max_players = new_data.max_players
-        self.banner = new_data.banner
-        self.added_at = (
-            dateutil.parser.parse(new_data.added_at).replace(tzinfo=timezone.utc)
-            if new_data.added_at
-            else datetime.datetime.now(timezone.utc)
-        )
-        self.status = new_data.status or self.STATUS_UNKNOWN
-        self.total_votes += new_data.total_votes
-        self.country = new_data.country
-        self.languages = ",".join(new_data.languages)
-        self.website = new_data.website
-        self.discord = new_data.discord
+        if new_data.name is not None and new_data.name.strip() != "":
+            self.name = new_data.name.strip()
+        if new_data.description is not None and new_data.description.strip() != "":
+            self.description = new_data.description.strip()
+        if (
+            new_data.ip_address_java is not None
+            and new_data.ip_address_java.strip() != ""
+        ):
+            self.ip_address_java = new_data.ip_address_java.strip()
+        if (
+            new_data.ip_address_bedrock is not None
+            and new_data.ip_address_bedrock.strip() != ""
+        ):
+            self.ip_address_bedrock = new_data.ip_address_bedrock.strip()
+        if new_data.versions:
+            # Ensure versions is a list of unique versions
+            new_data.versions = list(set(new_data.versions))
+            self.versions = ",".join(new_data.versions)
+        if new_data.players_online is not None:
+            self.players_online = new_data.players_online
+        if new_data.max_players is not None:
+            self.max_players = new_data.max_players
+        if new_data.banner is not None and new_data.banner.strip() != "":
+            self.banner = new_data.banner.strip()
+        if new_data.added_at is not None and new_data.added_at.strip() != "":
+            self.added_at = (
+                dateutil.parser.parse(new_data.added_at).replace(tzinfo=timezone.utc)
+                if new_data.added_at
+                else datetime.datetime.now(timezone.utc)
+            )
+        if new_data.status is not None:
+            self.status = new_data.status
+        if new_data.total_votes is not None:
+            self.total_votes += new_data.total_votes
+        if new_data.country is not None and new_data.country.strip() != "":
+            self.country = new_data.country.strip()
+        if new_data.languages is not None and new_data.languages:
+            # Ensure languages is a list of unique languages
+            new_data.languages = list(
+                {lang.strip() for lang in new_data.languages if lang.strip()}
+            )
+            self.languages = ",".join(new_data.languages)
+        if new_data.website is not None and new_data.website.strip() != "":
+            self.website = new_data.website.strip()
+        if new_data.discord is not None and new_data.discord.strip() != "":
+            self.discord = new_data.discord.strip()
 
-        # Save the updated server instance
-        self.save()
+    def update_tags(self, new_data: FetchedServer) -> None:
 
         with transaction.atomic():
             # Clear existing tags and add new ones

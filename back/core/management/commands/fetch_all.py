@@ -1,14 +1,14 @@
 import asyncio
 from django.core.management.base import BaseCommand
 
-import fetcher
+from fetcher import fetch
 
 
 class Command(BaseCommand):
     help = "Fetch all Minecraft servers"
 
     def handle(self, *args, **kwargs):
-        asyncio.run(fetcher.run())
+        asyncio.run(fetch.run())
         self.stdout.write(
-            self.style.SUCCESS("Successfully fetched all Minecraft servers from FindMC")
+            self.style.SUCCESS("Successfully fetched all Minecraft servers")
         )
