@@ -9,7 +9,7 @@ import type { SearchParams } from "./types/SearchParams";
 import type { SearchValuesList } from "./types/SearchValuesList";
 import { getCountry } from "./helpers/countries";
 import { ServerView } from "./components/ServerView";
-import { Close, SearchOutlined } from "@mui/icons-material";
+import { SearchOutlined } from "@mui/icons-material";
 
 
 const API_HOST = import.meta.env.VITE_API_HOST
