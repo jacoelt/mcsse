@@ -103,12 +103,11 @@ class WebpageGetter:
                 # Wait for the page to load completely
                 wait_for = (By.TAG_NAME, "body")
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located(wait_for))
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located(wait_for))
 
         except TimeoutException as e:
             logger.warning(f"Timeout while waiting for {url}")
-            logger.warning(driver.page_source)
-            raise e
+            logger.debug(driver.page_source)
 
         finally:
             source = driver.page_source

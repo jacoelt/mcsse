@@ -97,10 +97,14 @@ class Server(models.Model):
         Create a Server instance from a fetched server data.
         """
         server_instance = cls()
-        server_instance.updateData(fetched_server)
+        server_instance.updateData(fetched_server, should_reset_total_votes=True)
         return server_instance
 
-    def updateData(self, new_data: FetchedServer) -> None:
+    def updateData(
+        self,
+        new_data: FetchedServer,
+        should_reset_total_votes: bool = False,
+    ) -> None:
         """
         Update the server data with new data from a fetcher.
         """
@@ -137,7 +141,10 @@ class Server(models.Model):
         if new_data.status is not None:
             self.status = new_data.status
         if new_data.total_votes is not None:
-            self.total_votes += new_data.total_votes
+            if should_reset_total_votes:
+                self.total_votes = new_data.total_votes
+            else:
+                self.total_votes += new_data.total_votes
         if new_data.country is not None and new_data.country.strip() != "":
             self.country = new_data.country.strip()
         if new_data.languages is not None and new_data.languages:

@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import pdb
 
 from django.conf import settings
 from django.db import transaction
@@ -31,7 +30,8 @@ WEBSITE_STRATEGIES = [
 async def run():
     logger.info("Starting the fetching process...")
 
-    server_list = []
+    is_first_run = True
+
     for strategyKlass in WEBSITE_STRATEGIES:
         logger.info(f"Getting server list from {strategyKlass.__name__}...")
         strategy = strategyKlass()
@@ -41,30 +41,35 @@ async def run():
             logger.info(
                 f"Fetched {len(servers)} servers from {strategyKlass.__name__}."
             )
-            server_list.extend(servers)
         except Exception as e:
-            logger.warning(f"Error fetching servers from {strategyKlass.__name__}: {e}")
+            logger.warning(f"Error fetching servers from {strategyKlass.__name__}")
+            logger.exception(e)
             continue
 
-    logger.info(f"Fetched {len(server_list)} servers.")
-
-    logger.info("Saving servers and tags to the database...")
-
-    if settings.DEBUG:
-        from django.db import connection
-
-        query_count = len(connection.queries)
-        pdb.set_trace()
-
-    await sync_to_async(save_to_database)(server_list)
-
-    if settings.DEBUG:
         logger.info(
-            f"Saved servers and tags to the database. Total queries made: {len(connection.queries) - query_count}."
+            f"Saving servers and tags to the database for {strategyKlass.__name__}..."
         )
 
+        if settings.DEBUG:
+            from django.db import connection
 
-def save_to_database(fetched_server_list: list[FetchedServer]):
+            query_count = len(connection.queries)
+
+        await sync_to_async(save_to_database)(servers, is_first_run=is_first_run)
+        is_first_run = False
+
+        if settings.DEBUG:
+            logger.info(
+                f"Saved servers and tags to the database. Total queries made: {len(connection.queries) - query_count}."
+            )
+
+    logger.info(f"Done.")
+
+
+def save_to_database(
+    fetched_server_list: list[FetchedServer],
+    is_first_run: bool = False,
+):
     # Multiple step process:
     # 1. Save all tags first to ensure they exist in the database.
     # 2. Split servers into those that need to be created and those that need to be updated.
@@ -163,7 +168,10 @@ def save_to_database(fetched_server_list: list[FetchedServer]):
                 (fetched_server.ip_address_java, fetched_server.ip_address_bedrock)
             )
             if server_from_db:
-                server_from_db.updateData(fetched_server)
+                server_from_db.updateData(
+                    fetched_server,
+                    should_reset_total_votes=is_first_run,
+                )
                 updated_servers.append(server_from_db)
 
         Server.objects.bulk_update(

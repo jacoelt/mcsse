@@ -1,6 +1,5 @@
 import asyncio
 from datetime import date
-import pdb
 import aiohttp
 from fetcher.server_fetcher_base import ServerFetcherBase
 from core.models import Server, ServerTag
@@ -58,7 +57,6 @@ class FindMcServerFetcher(ServerFetcherBase):
             url = f"{self.list_api_url}?pageNumber={current_page}&pageSize={PAGE_SIZE}"
             print(f"Fetching server list from: {url}")
             async with session.get(url) as response:
-                pdb.set_trace()
                 if response.status != 200:
                     raise Exception(f"Failed to fetch server list: {response.status}")
                 data = await response.json()
