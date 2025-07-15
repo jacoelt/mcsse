@@ -3,7 +3,7 @@ import datetime
 import uuid
 import dateutil
 import dateutil.parser
-from django.db import models, transaction
+from django.db import models
 
 from fetcher.fetched_server import FetchedServer
 
@@ -106,7 +106,7 @@ class Server(models.Model):
         should_reset_total_votes: bool = False,
     ) -> None:
         """
-        Update the server data with new data from a fetcher.
+        Update the server data with new data from a fetched server.
         """
         if new_data.name is not None and new_data.name.strip() != "":
             self.name = new_data.name.strip()
@@ -157,13 +157,3 @@ class Server(models.Model):
             self.website = new_data.website.strip()
         if new_data.discord is not None and new_data.discord.strip() != "":
             self.discord = new_data.discord.strip()
-
-    def update_tags(self, new_data: FetchedServer) -> None:
-
-        with transaction.atomic():
-            # Clear existing tags and add new ones
-            self.tags.clear()
-            for tag in new_data.tags:
-                db_tag = ServerTag.objects.filter(name=tag.name).first()
-                if db_tag:
-                    self.tags.add(db_tag)

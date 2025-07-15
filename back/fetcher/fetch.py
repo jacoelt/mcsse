@@ -5,9 +5,11 @@ from django.conf import settings
 from django.db import transaction
 
 from fetcher.fetched_server import FetchedServer
-from fetcher.minecraft_server_list_fetcher import MinecraftServerListFetcher
 from core.models import Server, ServerTag
 from asgiref.sync import sync_to_async
+
+from fetcher.minecraft_server_list_fetcher import MinecraftServerListFetcher
+from fetcher.minecraftservers_fetcher import MinecraftServersFetcher
 
 
 logger = logging.getLogger(__name__)
@@ -20,14 +22,14 @@ WEBSITE_STRATEGIES = [
     # MinecraftMpFetcher,  # "https://minecraft-mp.com/"
     # ServerFetcherBase,  # "https://www.planetminecraft.com/servers/"
     # ServerFetcherBase,  # "https://topg.org/Minecraft-servers"
-    # MinecraftServersFetcher,  # "https://minecraftservers.org/"
+    MinecraftServersFetcher,  # "https://minecraftservers.org/"
     # ServerFetcherBase,  # "https://serveur-minecraft.com/"
     # FindMcServerFetcher,  # "https://findmcserver.com/servers"
     # BestMinecraftServersFetcher,  # "https://best-minecraft-servers.co/"
 ]
 
 
-async def run():
+async def run(do_save: bool = True):
     logger.info("Starting the fetching process...")
 
     is_first_run = True
@@ -49,6 +51,10 @@ async def run():
         logger.info(
             f"Saving servers and tags to the database for {strategyKlass.__name__}..."
         )
+
+        if not do_save:
+            logger.info("Skipping saving of data as per command line argument.")
+            continue
 
         if settings.DEBUG:
             from django.db import connection

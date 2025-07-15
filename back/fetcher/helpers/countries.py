@@ -264,6 +264,13 @@ def get_country_code(country_name: str, raise_not_found: bool = True) -> str:
     :param raise_not_found: If True, raises a KeyError if the country is not found.
     :return: The country code.
     """
+    if not country_name:
+        return None
+
+    if len(country_name) == 2:
+        # If the country name is already a 2-letter code, return it directly
+        return country_name.lower()
+
     country_name = country_name.strip()
 
     if country_name in COUNTRY_MAPPING:
