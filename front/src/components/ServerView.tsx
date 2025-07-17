@@ -45,7 +45,7 @@ export function ServerView({ server, onClose }: ServerViewProps) {
           <Close />
         </IconButton>
         <Grid container spacing={2} sx={{ padding: 2 }}>
-          <Grid size={4} container spacing={2}>
+          <Grid size={4} container spacing={2} sx={{ height: "fit-content" }}>
 
             {server.ip_address_java && (
               <Grid size={12}>
