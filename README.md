@@ -18,13 +18,21 @@ The frontend provides a React single-page application, making api calls to the b
 The backend provides a Django-Ninja api to search the database for servers, as well as a Django command to fetch data
 from various Minecraft lists.
 
-Only one website fetcher is implemented for now.
+Only two website fetchers are implemented for now.
 
 ## How?
 If you want to run this project locally, here's what you need to do
 
+### Fetch
+Copy `back/.env.dist` file into `back/.env`, filling in the values you need
+
+```shell
+cd back
+./manage.py fetch_all
+```
+
 ### Backend
-Copy `.env.dist` file into `.env`, filling in the values you need
+Copy `back/.env.dist` file into `back/.env`, filling in the values you need
 
 ```shell
 cd back
@@ -34,7 +42,7 @@ pip install -r requirements.txt
 ```
 
 ### Frontend
-Copy `.env.dist` file into `.env`, filling in the values you need
+Copy `front/.env.dist` file into `front/.env`, filling in the values you need
 
 ```shell
 cd front
