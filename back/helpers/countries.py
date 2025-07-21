@@ -285,3 +285,22 @@ def get_country_code(country_name: str, raise_not_found: bool = True) -> str:
         raise KeyError(f"Country '{country_name}' not found in mapping.")
 
     return None
+
+
+def sorted_countries(countries: set) -> list:
+    """
+    Sort a set of country names or codes based on the COUNTRY_MAPPING.
+
+    :param countries: A set of country names or codes.
+    :return: A sorted list of country names or codes.
+    """
+    if not countries:
+        return []
+    # Reverse the mapping to get country names from codes
+    reverse_mapping = {v: k for k, v in COUNTRY_MAPPING.items()}
+    return sorted(
+        countries,
+        key=lambda code: reverse_mapping.get(
+            code, code
+        ),  # Use the reverse mapping for sorting
+    )

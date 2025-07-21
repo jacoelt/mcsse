@@ -5,6 +5,7 @@ from ninja import NinjaAPI
 
 from core.api.schema import SearchIn, ServerOut, ValuesListsOut
 from core.models import Server, ServerTag
+from helpers.countries import sorted_countries
 
 
 api = NinjaAPI(auth=None, csrf=False)
@@ -136,13 +137,14 @@ def get_values_lists(request):
 
     versions = sorted(versions_set, key=version_sort_key)
 
-    countries = {
-        country
-        for country in Server.objects.filter(country__isnull=False)
-        .values_list("country", flat=True)
-        .distinct()
-    }
-    countries = sorted(countries)
+    countries = sorted_countries(
+        {
+            country
+            for country in Server.objects.filter(country__isnull=False)
+            .values_list("country", flat=True)
+            .distinct()
+        }
+    )
 
     languages_set = set()
     for server in Server.objects.all():

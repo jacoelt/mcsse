@@ -1,4 +1,4 @@
-from fetcher.helpers.webpage_getter import WebpageGetter
+from fetcher.webpage_getter import WebpageGetter
 from fetcher.server_fetcher_base import ServerFetcherBase
 from core.models import Server
 from bs4 import BeautifulSoup

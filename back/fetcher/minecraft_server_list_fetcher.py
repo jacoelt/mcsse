@@ -1,7 +1,7 @@
 import logging
 from fetcher.helpers.countries import get_country_code
 from fetcher.fetched_server import FetchedServer
-from fetcher.helpers.webpage_getter import WebpageGetter
+from fetcher.webpage_getter import WebpageGetter
 from fetcher.server_fetcher_base import ServerFetcherBase
 from core.models import ServerTag
 from bs4 import BeautifulSoup
