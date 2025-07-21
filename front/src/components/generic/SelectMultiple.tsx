@@ -27,13 +27,14 @@ function getStyles(item: string, selectedItems: readonly string[], theme: Theme)
 
 interface SelectMultipleProps {
   label: string;
+  isLoading: boolean;
   itemList: SelectItem[];
   selection: string[];
   onChange: (selection: string[]) => void;
   sx?: React.CSSProperties;
 }
 
-export default function SelectMultiple({ label, itemList, onChange, selection, sx }: SelectMultipleProps) {
+export default function SelectMultiple({ label, isLoading, itemList, onChange, selection, sx }: SelectMultipleProps) {
   const theme = useTheme();
 
   const onChangeWrapper = (event: SelectChangeEvent<typeof selection>) => {
@@ -85,15 +86,17 @@ export default function SelectMultiple({ label, itemList, onChange, selection, s
         )}
         MenuProps={MenuProps}
       >
-        {itemList.map((item) => (
-          <MenuItem
-            key={item.value}
-            value={item.value}
-            style={getStyles(item.label || item.value, selection, theme)}
-          >
-            {item.label || item.value}
-          </MenuItem>
-        ))}
+        {isLoading && itemList.length === 0
+          ? <MenuItem disabled>Loading...</MenuItem>
+          : itemList.map((item) => (
+            <MenuItem
+              key={item.value}
+              value={item.value}
+              style={getStyles(item.label || item.value, selection, theme)}
+            >
+              {item.label || item.value}
+            </MenuItem>
+          ))}
       </Select>
     </FormControl>
   )

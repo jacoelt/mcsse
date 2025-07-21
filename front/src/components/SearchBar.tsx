@@ -12,12 +12,13 @@ import { DateDeltaSelector } from "./generic/DateDeltaSelector";
 
 interface SearchBarProps {
   valuesList: SearchValuesList
+  isLoading: boolean;
   initialSearch: SearchParams;
   handleSearch: (search: SearchParams) => void;
   sx?: React.CSSProperties;
 }
 
-export default function SearchBar({ valuesList, initialSearch, handleSearch, sx }: SearchBarProps) {
+export default function SearchBar({ valuesList, isLoading, initialSearch, handleSearch, sx }: SearchBarProps) {
 
   const [currentSearch, setCurrentSearch] = useState<SearchParams>(initialSearch);
 
@@ -50,6 +51,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
 
       <SelectMultiple
         label="Version"
+        isLoading={isLoading}
         itemList={valuesList.versions.map((version) => ({ value: version }))}
         onChange={(selection: string[]) => {
           setCurrentSearch((prev) => ({ ...prev, versions: selection }));
@@ -109,6 +111,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
 
       <SelectMultiple
         label="Server Status"
+        isLoading={isLoading}
         itemList={valuesList.statuses}
         onChange={(selection: string[]) => {
           setCurrentSearch((prev) => ({ ...prev, statuses: selection as ("online" | "offline" | "unknown")[] }));
@@ -134,6 +137,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
 
       <SelectMultiple
         label="Country"
+        isLoading={isLoading}
         itemList={valuesList.countries.map((country) => (
           {
             value: country.code,
@@ -165,6 +169,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
 
       <SelectMultiple
         label="Tags"
+        isLoading={isLoading}
         itemList={valuesList.tags.map((tag) => ({ value: tag.name, tooltip: tag.description }))}
         onChange={(selection: string[]) => {
           setCurrentSearch((prev) => ({ ...prev, tags: selection }));
@@ -172,7 +177,7 @@ export default function SearchBar({ valuesList, initialSearch, handleSearch, sx 
         selection={currentSearch.tags || []}
       />
 
-      <Stack direction="row" justifyContent="center">
+      <Stack direction="row" justifyContent="center" spacing={4}>
         <Button
           variant="outlined"
           color="secondary"

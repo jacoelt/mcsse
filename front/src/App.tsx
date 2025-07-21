@@ -15,6 +15,37 @@ import { SearchOutlined } from "@mui/icons-material";
 const API_HOST = import.meta.env.VITE_API_HOST
 
 
+const initialValuesList: SearchValuesList = {
+  versions: [],
+  editions: [
+    { label: "Java", value: "java" },
+    { label: "Bedrock", value: "bedrock" },
+    { label: "Java & Bedrock", value: "both" },
+  ],
+  countries: [],
+  languages: [],
+  dates: [
+    { label: "Last 24 hours", value: 1 },
+    { label: "Last 7 days", value: 7 },
+    { label: "Last month", value: 30 },
+    { label: "Last 3 months", value: 90 },
+    { label: "Last 6 months", value: 180 },
+    { label: "Last year", value: 365 },
+    { label: "Last 5 years", value: 1825 },
+    { label: "All time", value: -1 },
+  ],
+  statuses: [
+    { label: "Online", value: "online" },
+    { label: "Offline", value: "offline" },
+    { label: "Unknown", value: "unknown" },
+  ],
+  tags: [],
+  maxVotes: 1_000_000,
+  maxOnlinePlayers: 1_000_000,
+  maxMaxPlayers: 1_000_000,
+}
+
+
 export default function App() {
   const [servers, setServers] = useState<Server[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +53,8 @@ export default function App() {
   const [currentViewedServer, setCurrentViewedServer] = useState<Server | null>(null);
   const [searchParams, setSearchParams] = useState<SearchParams>({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchValuesLists, setSearchValuesLists] = useState<SearchValuesList | null>(null);
+  const [searchValuesLists, setSearchValuesLists] = useState<SearchValuesList>(initialValuesList);
+  const [isSearchValuesListLoading, setIsSearchValuesListLoading] = useState(false);
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
 
   const theme = useTheme();
@@ -81,6 +113,7 @@ export default function App() {
   }
 
   const fetchValuesLists = async () => {
+    setIsSearchValuesListLoading(true);
     try {
       const res = await fetch(`${API_HOST}/api/values-lists`, {
         headers: {
@@ -103,6 +136,8 @@ export default function App() {
         maxOnlinePlayers: data.max_online_players,
         maxMaxPlayers: data.max_max_players,
       })
+
+      setIsSearchValuesListLoading(false);
 
     } catch (err) {
       console.error("Error fetching values list:", err);
@@ -159,14 +194,13 @@ export default function App() {
 
           }}
         >
-          {
-            searchValuesLists &&
-            <SearchBar
-              valuesList={searchValuesLists}
-              initialSearch={searchParams}
-              handleSearch={(search) => { handleSearch(search) }}
-            />
-          }
+          <SearchBar
+            valuesList={searchValuesLists}
+            isLoading={isSearchValuesListLoading}
+            initialSearch={searchParams}
+            handleSearch={(search) => { handleSearch(search) }}
+          />
+
         </Drawer>
         <Stack
           sx={{
