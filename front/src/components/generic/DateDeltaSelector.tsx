@@ -8,10 +8,11 @@ interface DateDeltaSelectorProps {
   value: number; // Currently selected value
   onChange: (value: number) => void; // Callback to handle the change
   valueList: DateDelta[]; // List of date deltas with labels and values
+  sx?: React.CSSProperties;
 }
 
 
-export function DateDeltaSelector({ label, value, onChange, valueList }: DateDeltaSelectorProps) {
+export function DateDeltaSelector({ label, value, onChange, valueList, sx }: DateDeltaSelectorProps) {
 
   const [currentIndex, setCurrentIndex] = useState<number>(valueList.length - 1); // Default to the last item in the list);
 
@@ -33,7 +34,7 @@ export function DateDeltaSelector({ label, value, onChange, valueList }: DateDel
   };
 
   return (
-    <Stack direction="row" spacing={3}>
+    <Stack direction="row" spacing={3} sx={{ ...sx, width: 'calc(100% - 30px)' }}>
       <InputLabel sx={{ whiteSpace: 'nowrap', overflow: 'visible' }}>{label}</InputLabel>
 
       <Slider

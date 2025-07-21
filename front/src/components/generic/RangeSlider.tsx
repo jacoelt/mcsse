@@ -49,7 +49,7 @@ export function RangeSlider({ label, value, onChange, min, max, sx }: RangeSlide
   }
 
   return (
-    <Stack direction="row" spacing={3} sx={{ ...sx }}>
+    <Stack direction="row" spacing={3} sx={{ ...sx, width: 'calc(100% - 30px)' }}>
       <InputLabel sx={{ whiteSpace: 'nowrap', overflow: 'visible' }}>{label}</InputLabel>
 
       <Slider
