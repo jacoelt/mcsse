@@ -194,13 +194,15 @@ export default function App() {
 
           }}
         >
+          <Typography variant="h4" sx={{ padding: 2, textAlign: "center" }}>
+            Search Servers
+          </Typography>
           <SearchBar
             valuesList={searchValuesLists}
             isLoading={isSearchValuesListLoading}
             initialSearch={searchParams}
             handleSearch={(search) => { handleSearch(search) }}
           />
-
         </Drawer>
         <Stack
           sx={{
