@@ -5,7 +5,7 @@ import SelectMultiple from "./generic/SelectMultiple";
 import { useState } from "react";
 import type { SearchValuesList } from "../types/SearchValuesList";
 import { SelectSimple } from "./generic/SelectSimple";
-import { RangeSlider } from "./generic/RangeSlider";
+import { RangeSliderLog } from "./generic/RangeSliderLog";
 import { DateDeltaSelector } from "./generic/DateDeltaSelector";
 // import { getLanguageFromCode } from "../helpers/languages";
 
@@ -68,7 +68,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         selection={currentSearch.edition || "both"}
       />
 
-      <RangeSlider
+      <RangeSliderLog
         label="Online Players"
         min={0}
         max={valuesList.maxOnlinePlayers}
@@ -84,7 +84,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         value={[currentSearch.players_online_min || 0, currentSearch.players_online_max || valuesList.maxOnlinePlayers]}
       />
 
-      <RangeSlider
+      <RangeSliderLog
         label="Max Players"
         min={0}
         max={valuesList.maxMaxPlayers}
@@ -119,7 +119,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         selection={currentSearch.statuses || []}
       />
 
-      <RangeSlider
+      <RangeSliderLog
         label="Total Votes"
         min={0}
         max={valuesList.maxVotes}

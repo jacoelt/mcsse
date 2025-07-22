@@ -1,7 +1,7 @@
 import { InputLabel, Slider, Stack } from "@mui/material";
 import React, { useEffect } from "react";
 
-interface RangeSliderProps {
+interface RangeSliderLogProps {
   label: string;
   value: number[];
   onChange: (value: number[]) => void;
@@ -11,7 +11,7 @@ interface RangeSliderProps {
 }
 
 
-export function RangeSlider({ label, value, onChange, min, max, sx }: RangeSliderProps) {
+export function RangeSliderLog({ label, value, onChange, min, max, sx }: RangeSliderLogProps) {
 
   const scale = function (val: number) {
     if (val <= 0) {
