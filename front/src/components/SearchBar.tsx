@@ -81,7 +81,10 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
             }));
           }
         }}
-        value={[currentSearch.players_online_min || 0, currentSearch.players_online_max || valuesList.maxOnlinePlayers]}
+        value={[
+          currentSearch.players_online_min === undefined ? 0 : currentSearch.players_online_min,
+          currentSearch.players_online_max === undefined ? valuesList.maxOnlinePlayers : currentSearch.players_online_max
+        ]}
       />
 
       <RangeSliderLog
@@ -97,7 +100,10 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
             }));
           }
         }}
-        value={[currentSearch.max_players_min || 0, currentSearch.max_players_max || valuesList.maxMaxPlayers]}
+        value={[
+          currentSearch.max_players_min === undefined ? 0 : currentSearch.max_players_min,
+          currentSearch.max_players_max === undefined ? valuesList.maxMaxPlayers : currentSearch.max_players_max
+        ]}
       />
 
       <DateDeltaSelector
@@ -132,7 +138,10 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
             }));
           }
         }}
-        value={[currentSearch.total_votes_min || 0, currentSearch.total_votes_max || valuesList.maxVotes]}
+        value={[
+          currentSearch.total_votes_min === undefined ? 0 : currentSearch.total_votes_min,
+          currentSearch.total_votes_max === undefined ? valuesList.maxVotes : currentSearch.total_votes_max
+        ]}
       />
 
       <SelectMultiple
