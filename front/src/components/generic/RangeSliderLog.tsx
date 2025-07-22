@@ -21,12 +21,11 @@ export function RangeSliderLog({ label, value, onChange, min, max, sx }: RangeSl
   }
 
   const unscale = function (val: number) {
+    if (val <= 0) {
+      return 0;  // 10**0 is 1 but lowest value should be 0
+    }
     return Math.pow(10, val);
   }
-
-  const [internalValue, setInternalValue] = React.useState(value.map(scale));
-
-  useEffect(() => setInternalValue(value.map(scale)), [value])
 
   const valueLabelFormat = (val: number) => {
     if (val <= 1) {
@@ -37,13 +36,7 @@ export function RangeSliderLog({ label, value, onChange, min, max, sx }: RangeSl
 
   const onChangeWrapper = (_: Event, newValue: number[]) => {
     if (Array.isArray(newValue)) {
-      const newUnscaledValue = newValue.map((v) => {
-        if (v <= 0) {
-          return 0;  // Lowest value appears as 1 because of logarithm scaling, but actually should be 0
-        }
-        return unscale(v);
-      });
-      setInternalValue(newValue);
+      const newUnscaledValue = newValue.map((v) => unscale(v));
       onChange(newUnscaledValue);
     }
   }
@@ -53,12 +46,13 @@ export function RangeSliderLog({ label, value, onChange, min, max, sx }: RangeSl
       <InputLabel sx={{ whiteSpace: 'nowrap', overflow: 'visible' }}>{label}</InputLabel>
 
       <Slider
-        value={internalValue}
+        value={value.map(scale)}
         onChange={onChangeWrapper}
         valueLabelDisplay="on"
         min={scale(min)}
         max={scale(max)}
         step={1}
+        marks
         scale={unscale}
         aria-labelledby="range-slider"
         getAriaLabel={() => label}
