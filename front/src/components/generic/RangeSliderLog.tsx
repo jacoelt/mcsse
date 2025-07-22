@@ -1,5 +1,5 @@
 import { InputLabel, Slider, Stack } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 
 interface RangeSliderLogProps {
   label: string;
