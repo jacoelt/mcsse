@@ -124,7 +124,9 @@ class Server(models.Model):
             self.ip_address_bedrock = new_data.ip_address_bedrock.strip()
         if new_data.versions:
             # Ensure versions is a list of unique versions
-            new_data.versions = list(set(new_data.versions))
+            new_data.versions = list(
+                {version for version in new_data.versions if version}
+            )
             self.versions = ",".join(new_data.versions)
         if new_data.players_online is not None:
             self.players_online = new_data.players_online

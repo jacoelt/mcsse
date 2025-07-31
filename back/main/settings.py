@@ -176,6 +176,13 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        "file": {
+            "level": "DEBUG",
+            "filters": ["require_debug_true"],
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "debug.log"),
+            "formatter": "simple",
+        },
     },
     "loggers": {
         "django": {
@@ -189,6 +196,7 @@ LOGGING = {
             "level": (env("LOG_LEVEL").upper() if env("LOG_LEVEL") else "WARNING"),
         },
         "fetcher": {
+            # "handlers": ["file"],
             "handlers": ["console"],
             "propagate": True,
             "level": (env("LOG_LEVEL").upper() if env("LOG_LEVEL") else "WARNING"),
