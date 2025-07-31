@@ -24,7 +24,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         # Get server list webpage content
         webpage_getter = WebpageGetter()
         logger.info("Fetching pages content...")
-        pages_content = await webpage_getter.get(
+        pages_content = webpage_getter.get(
             urls=[
                 self.server_list_url.format(page_number=page_number)
                 for page_number in range(1, self.max_page_number + 1)
@@ -37,7 +37,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         # Parse the content to extract server list
         logger.info("Parsing server list content...")
         server_ids = set()
-        for page_content in pages_content:
+        async for page_content in pages_content:
             soup = BeautifulSoup(page_content, "html.parser")
             server_links = soup.select("div.serverdatadiv1 table tbody td.n1 a")
 
@@ -57,7 +57,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         # Parse the content to extract server details
         # Create a Server object
 
-        server_pages = await webpage_getter.get(
+        server_pages = webpage_getter.get(
             urls=[
                 self.individual_server_url.format(server_id=server_id)
                 for server_id in server_ids
@@ -70,7 +70,7 @@ class MinecraftServerListFetcher(ServerFetcherBase):
         logger.info("Parsing individual server content...")
         servers = []
         error_list = []
-        for server_content in server_pages:
+        async for server_content in server_pages:
             if not server_content:
                 continue
 
