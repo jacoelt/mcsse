@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from django.db import models
 from django.db.models import Q
 from ninja import NinjaAPI
 
@@ -120,7 +119,9 @@ def get_values_lists(request):
     """
 
     versions_set = set()
-    for server in Server.objects.all():
+    servers = list(Server.objects.all())
+
+    for server in servers:
         if server.versions:
             versions_set.update(
                 {version.strip() for version in server.versions.split(",")}
@@ -138,16 +139,11 @@ def get_values_lists(request):
     versions = sorted(versions_set, key=version_sort_key)
 
     countries = sorted_countries(
-        {
-            country
-            for country in Server.objects.filter(country__isnull=False)
-            .values_list("country", flat=True)
-            .distinct()
-        }
+        {server.country for server in servers if server.country}
     )
 
     languages_set = set()
-    for server in Server.objects.all():
+    for server in servers:
         if server.languages:
             languages_set.update(
                 {language.strip() for language in server.languages.split(",")}
@@ -186,17 +182,14 @@ def get_values_lists(request):
         "statuses": [
             {"value": status, "label": label} for status, label in Server.STATUS_CHOICES
         ],
-        "max_votes": Server.objects.aggregate(
-            max_votes=models.Max("total_votes"),
-        ).get("max_votes")
-        or 10000,
-        "max_online_players": Server.objects.aggregate(
-            max_online_players=models.Max("players_online"),
-        ).get("max_online_players")
-        or 1000,
-        "max_max_players": Server.objects.aggregate(
-            max_max_players=models.Max("max_players"),
-        ).get("max_max_players")
-        or 1000,
+        "max_votes": (
+            max(server.total_votes for server in servers) if servers else 10000
+        ),
+        "max_online_players": (
+            max(server.players_online for server in servers) if servers else 1000
+        ),
+        "max_max_players": (
+            max(server.max_players for server in servers) if servers else 1000
+        ),
     }
     return values_list
