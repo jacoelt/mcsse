@@ -34,6 +34,8 @@ async def run(do_save: bool = True):
 
     is_first_run = True
 
+    all_existing_ids = set()
+
     for strategyKlass in WEBSITE_STRATEGIES:
         logger.info(f"Getting server list from {strategyKlass.__name__}...")
         strategy = strategyKlass()
@@ -61,7 +63,11 @@ async def run(do_save: bool = True):
 
             query_count = len(connection.queries)
 
-        await sync_to_async(save_to_database)(servers, is_first_run=is_first_run)
+        existing_ids = await sync_to_async(save_to_database)(
+            servers, is_first_run=is_first_run
+        )
+        all_existing_ids.update(existing_ids)
+
         is_first_run = False
 
         if settings.DEBUG:
@@ -69,13 +75,19 @@ async def run(do_save: bool = True):
                 f"Saved servers and tags to the database. Total queries made: {len(connection.queries) - query_count}."
             )
 
+    logger.info("Fetching process completed.")
+
+    if all_existing_ids:
+        logger.info("Remove servers that are no longer in the database...")
+        await sync_to_async(remove_stale_servers)(all_existing_ids)
+
     logger.info(f"Done.")
 
 
 def save_to_database(
     fetched_server_list: list[FetchedServer],
     is_first_run: bool = False,
-):
+) -> list[str]:
     # Multiple step process:
     # 1. Save all tags first to ensure they exist in the database.
     # 2. Split servers into those that need to be created and those that need to be updated.
@@ -212,6 +224,29 @@ def save_to_database(
         ServerTag.servers.through.objects.bulk_create(
             server_tags_join, ignore_conflicts=True
         )
+
+    return {
+        fetched_server.id
+        for fetched_server in fetched_servers_to_create + fetched_servers_to_update
+    }
+
+
+def remove_stale_servers(existing_ids: set[str]):
+    """
+    Remove servers that no longer exist on the listings.
+    """
+    logger.info("Removing stale servers...")
+
+    # Get all servers that are not in the existing_ids set
+    stale_servers = Server.objects.exclude(id__in=existing_ids)
+
+    if stale_servers.exists():
+        logger.info(f"Found {stale_servers.count()} stale servers to remove.")
+        stale_servers.delete()
+    else:
+        logger.info("No stale servers found.")
+
+    logger.info("Stale servers removal completed.")
 
 
 if __name__ == "__main__":
