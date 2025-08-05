@@ -7,6 +7,7 @@ import type { SearchValuesList } from "../types/SearchValuesList";
 import { SelectSimple } from "./generic/SelectSimple";
 import { RangeSliderLog } from "./generic/RangeSliderLog";
 import { DateDeltaSelector } from "./generic/DateDeltaSelector";
+import AutocompleteSelectMultiple from "./generic/AutocompleteSelectMultiple";
 // import { getLanguageFromCode } from "../helpers/languages";
 
 
@@ -49,7 +50,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         }}
       />
 
-      <SelectMultiple
+      <AutocompleteSelectMultiple
         label="Version"
         isLoading={isLoading}
         itemList={valuesList.versions.map((version) => ({ value: version }))}
@@ -144,7 +145,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         ]}
       />
 
-      <SelectMultiple
+      <AutocompleteSelectMultiple
         label="Country"
         isLoading={isLoading}
         itemList={valuesList.countries.map((country) => (
@@ -162,7 +163,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
       />
 
       {/* No language is available from the minecraft server list we fetch
-      <SelectMultiple
+      <AutocompleteSelectMultiple
         label="Languages"
         itemList={valuesList.languages.map((language) => (
           {
@@ -176,7 +177,7 @@ export default function SearchBar({ valuesList, isLoading, initialSearch, handle
         selection={currentSearch.languages || []}
       /> */}
 
-      <SelectMultiple
+      <AutocompleteSelectMultiple
         label="Tags"
         isLoading={isLoading}
         itemList={valuesList.tags.map((tag) => ({ value: tag.name, tooltip: tag.description }))}
