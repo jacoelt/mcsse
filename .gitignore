@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+back/venv/
+back/db.sqlite3
+back/staticfiles/
+*.egg
+
+# Node
+front/node_modules/
+front/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+
+# Research (HTML dumps)
+.research/
+
+# Claude
+*.stackdump
