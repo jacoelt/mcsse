@@ -142,6 +142,35 @@ Header: X-Fetch-Key: <your FETCH_API_KEY>
 Query: mode=full (daily) or mode=players (hourly)
 ```
 
+## Tests
+
+The backend has 52 tests covering models, API endpoints, and the reconciler (deduplication/merge logic). Coverage is at 96%.
+
+```bash
+cd back
+source venv/Scripts/activate  # or source venv/bin/activate on Linux/macOS
+
+# Run all tests
+python manage.py test core.tests fetcher.tests
+
+# Run with verbose output
+python manage.py test core.tests fetcher.tests -v 2
+
+# Run with coverage
+coverage run manage.py test core.tests fetcher.tests
+coverage report
+
+# HTML coverage report
+coverage html
+# then open htmlcov/index.html
+```
+
+### What's tested
+
+- **Models** (`core/tests/test_models.py`): CRUD, relationships, unique constraints, default ordering, cascade deletes
+- **API** (`core/tests/test_api.py`): All search filters (name, version, edition, player range, vote range, country, tags, combined), sorting, pagination, clamping, server detail with tags/sources, filters endpoint with counts
+- **Reconciler** (`fetcher/tests/test_reconciler.py`): Dedup by IP:port, dedup by name fallback, source priority for field selection, vote summing, tag union, longest description, empty-field fallthrough, source tracking, player count updates
+
 ## Caveats
 
 - **Cloudflare-protected sites**: 4 of the 9 sources are behind Cloudflare JS challenges and don't return data with plain HTTP requests. Implementing these requires a headless browser solution like Playwright.

@@ -14,7 +14,10 @@
       "Bash(curl -s -L -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://minecraft.buzz/\" -o .research/minecraft-buzz.html)",
       "Bash(curl -s -L -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://serveur-minecraft.com/\" -o .research/serveur-minecraft.html)",
       "Bash(curl *)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(mkdir -p core/tests fetcher/tests)",
+      "Bash(rm -f core/tests.py)",
+      "Bash(source venv/Scripts/activate)"
     ]
   }
 }
