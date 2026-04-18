@@ -5,6 +5,7 @@ __pycache__/
 back/venv/
 back/db.sqlite3
 back/staticfiles/
+back/.coverage
 *.egg
 
 # Node
