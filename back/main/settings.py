@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "corsheaders",
     "core",
+    "fetcher",
 ]
 
 MIDDLEWARE = [
