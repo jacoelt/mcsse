@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, PlayerCount, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class MinecraftBuzzFetcher(ServerFetcher):
     source_name = "minecraft-buzz"
@@ -17,13 +15,25 @@ class MinecraftBuzzFetcher(ServerFetcher):
     base_url = "https://minecraft.buzz"
 
     async def fetch_servers(self):
+        # The homepage only shows 10 "featured" rows. The real paginated list
+        # lives at /popular-minecraft-servers[/{N}], which returns 30 rows per
+        # page — the top ~10 are sticky/sponsored and repeat on every page, so
+        # dedupe by external_id and stop when a page yields zero new servers.
+        # Also: disable redirect following so past-the-end 3xx stops cleanly.
+        seen: set[str] = set()
+        listing_path = "/popular-minecraft-servers"
         async with httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=30,
         ) as client:
-            for page in range(1, MAX_PAGES + 1):
-                url = f"{self.base_url}/page/{page}" if page > 1 else self.base_url
+            page = 1
+            while True:
+                url = (
+                    f"{self.base_url}{listing_path}/{page}"
+                    if page > 1
+                    else f"{self.base_url}{listing_path}"
+                )
                 try:
                     resp = await client.get(url)
                     if resp.status_code != 200:
@@ -37,10 +47,21 @@ class MinecraftBuzzFetcher(ServerFetcher):
                 if not rows:
                     break
 
+                logger.debug("%s: page %d, %d rows", self.source_name, page, len(rows))
+
+                new_on_page = 0
                 for row in rows:
                     server = self._parse_row(row)
-                    if server:
-                        yield server
+                    if not server or server.external_id in seen:
+                        continue
+                    seen.add(server.external_id)
+                    new_on_page += 1
+                    yield server
+
+                if new_on_page == 0:
+                    break
+
+                page += 1
 
     def _parse_row(self, row) -> FetchedServer | None:
         external_id = row.get("id", "")
