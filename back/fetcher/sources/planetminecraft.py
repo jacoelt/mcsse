@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class PlanetMinecraftFetcher(ServerFetcher):
     """planetminecraft.com — JS-rendered listing, scraped via curl_cffi browser TLS impersonation."""
@@ -19,16 +17,19 @@ class PlanetMinecraftFetcher(ServerFetcher):
     base_url = "https://www.planetminecraft.com"
 
     async def fetch_servers(self):
+        # Disable redirect following: past-the-end pages 3xx-redirect away
+        # (sometimes in loops), which we treat as end-of-list.
         seen: set[str] = set()
         async with AsyncSession(impersonate="chrome", timeout=30) as client:
-            for page in range(1, MAX_PAGES + 1):
+            page = 1
+            while True:
                 url = (
                     f"{self.base_url}/servers/?p={page}"
                     if page > 1
                     else f"{self.base_url}/servers/"
                 )
                 try:
-                    resp = await client.get(url)
+                    resp = await client.get(url, allow_redirects=False)
                 except Exception:
                     logger.exception(f"{self.source_name}: failed page {page}")
                     break
@@ -39,6 +40,8 @@ class PlanetMinecraftFetcher(ServerFetcher):
                 items = soup.select("li.resource_server_item")
                 if not items:
                     break
+
+                logger.debug("%s: page %d, %d items", self.source_name, page, len(items))
 
                 new_on_page = 0
                 for item in items:
@@ -51,6 +54,8 @@ class PlanetMinecraftFetcher(ServerFetcher):
 
                 if new_on_page == 0:
                     break
+
+                page += 1
 
     def _parse_item(self, item) -> FetchedServer | None:
         title = item.select_one("a.server-title")

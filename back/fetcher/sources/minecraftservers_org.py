@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, PlayerCount, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class MinecraftServersOrgFetcher(ServerFetcher):
     source_name = "minecraftservers-org"
@@ -17,12 +15,15 @@ class MinecraftServersOrgFetcher(ServerFetcher):
     base_url = "https://minecraftservers.org"
 
     async def fetch_servers(self):
+        # Disable redirect following: past-the-end pages 3xx-redirect away
+        # (sometimes in loops), which we treat as end-of-list.
         async with httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=30,
         ) as client:
-            for page in range(1, MAX_PAGES + 1):
+            page = 1
+            while True:
                 url = f"{self.base_url}/index/{page}" if page > 1 else self.base_url
                 try:
                     resp = await client.get(url)
@@ -37,10 +38,14 @@ class MinecraftServersOrgFetcher(ServerFetcher):
                 if not listings:
                     break
 
+                logger.debug("%s: page %d, %d listings", self.source_name, page, len(listings))
+
                 for listing in listings:
                     server = self._parse_listing(listing)
                     if server:
                         yield server
+
+                page += 1
 
     def _parse_listing(self, listing) -> FetchedServer | None:
         external_id = listing.get("data-id", "")

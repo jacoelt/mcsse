@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, PlayerCount, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class MinecraftMPFetcher(ServerFetcher):
     source_name = "minecraft-mp"
@@ -17,12 +15,16 @@ class MinecraftMPFetcher(ServerFetcher):
     base_url = "https://minecraft-mp.com"
 
     async def fetch_servers(self):
+        # Disable redirect following: past the last page, minecraft-mp.com
+        # redirects to the homepage. With redirects off, the 3xx falls through
+        # the status_code != 200 check and we stop paginating.
         async with httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=30,
         ) as client:
-            for page in range(1, MAX_PAGES + 1):
+            page = 1
+            while True:
                 url = f"{self.base_url}/servers/list/{page}/" if page > 1 else self.base_url
                 try:
                     resp = await client.get(url)
@@ -37,10 +39,14 @@ class MinecraftMPFetcher(ServerFetcher):
                 if not rows:
                     break
 
+                logger.debug("%s: page %d, %d rows", self.source_name, page, len(rows))
+
                 for row in rows:
                     server = self._parse_row(row)
                     if server:
                         yield server
+
+                page += 1
 
     def _parse_row(self, row) -> FetchedServer | None:
         # Server link and ID

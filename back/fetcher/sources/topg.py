@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, PlayerCount, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class TopGFetcher(ServerFetcher):
     source_name = "topg"
@@ -17,12 +15,15 @@ class TopGFetcher(ServerFetcher):
     base_url = "https://topg.org"
 
     async def fetch_servers(self):
+        # Disable redirect following: past-the-end pages 3xx-redirect away
+        # (sometimes in loops), which we treat as end-of-list.
         async with httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=30,
         ) as client:
-            for page in range(1, MAX_PAGES + 1):
+            page = 1
+            while True:
                 url = (
                     f"{self.base_url}/minecraft-servers/page/{page}"
                     if page > 1
@@ -44,12 +45,16 @@ class TopGFetcher(ServerFetcher):
                 if not listings:
                     break
 
+                logger.debug("%s: page %d, %d listings", self.source_name, page, len(listings))
+
                 for listing in listings:
                     if "ad-server" in listing.get("class", []):
                         continue
                     server = self._parse_listing(listing)
                     if server:
                         yield server
+
+                page += 1
 
     def _parse_listing(self, listing) -> FetchedServer | None:
         # Server link and ID
