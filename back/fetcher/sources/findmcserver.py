@@ -15,30 +15,44 @@ class FindMCServerFetcher(ServerFetcher):
     base_url = "https://findmcserver.com"
 
     async def fetch_servers(self):
+        page_size = 500
         async with AsyncSession(impersonate="chrome", timeout=30) as client:
-            try:
-                resp = await client.get(
-                    f"{self.base_url}/api/servers",
-                    params={"page": 0, "pageSize": 500},
-                )
-            except Exception:
-                logger.exception(f"{self.source_name}: request failed")
-                return
+            page = 0
+            while True:
+                try:
+                    resp = await client.get(
+                        f"{self.base_url}/api/servers",
+                        params={"pageNumber": page, "pageSize": page_size},
+                    )
+                except Exception:
+                    logger.exception(f"{self.source_name}: request failed")
+                    return
 
-            if resp.status_code != 200:
-                logger.warning(f"{self.source_name}: status {resp.status_code}")
-                return
+                if resp.status_code != 200:
+                    logger.warning(f"{self.source_name}: status {resp.status_code}")
+                    return
 
-            try:
-                payload = resp.json()
-            except Exception:
-                logger.exception(f"{self.source_name}: invalid JSON")
-                return
+                try:
+                    payload = resp.json()
+                except Exception:
+                    logger.exception(f"{self.source_name}: invalid JSON")
+                    return
 
-            for item in payload.get("data", []):
-                server = self._parse_item(item)
-                if server:
-                    yield server
+                items = payload.get("data", []) or []
+                if not items:
+                    return
+
+                logger.debug("%s: page %d, %d items", self.source_name, page, len(items))
+
+                for item in items:
+                    server = self._parse_item(item)
+                    if server:
+                        yield server
+
+                if len(items) < page_size:
+                    return
+
+                page += 1
 
     def _parse_item(self, item: dict) -> FetchedServer | None:
         external_id = item.get("id") or ""
