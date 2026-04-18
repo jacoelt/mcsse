@@ -36,9 +36,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Fetched {len(all_fetched)} server entries total")
 
         created, updated = reconcile_servers(all_fetched)
-        self.stdout.write(
-            self.style.SUCCESS(f"Done: {created} created, {updated} updated")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Done: {created} created, {updated} updated"))
 
     async def _fetch_all(self, fetchers):
         results = []

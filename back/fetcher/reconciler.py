@@ -90,8 +90,15 @@ def _merge_entries(
     for source_name, server in entries:
         # Priority fields: use first non-empty value (highest priority)
         for field_name in [
-            "name", "ip_address", "port", "game_version", "edition",
-            "country", "website_url", "discord_url", "banner_url",
+            "name",
+            "ip_address",
+            "port",
+            "game_version",
+            "edition",
+            "country",
+            "website_url",
+            "discord_url",
+            "banner_url",
         ]:
             current = result[field_name]
             value = getattr(server, field_name)

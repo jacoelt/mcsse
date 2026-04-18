@@ -136,11 +136,14 @@ class ServerListAPITest(TestCase):
         self.assertEqual(data["results"][0]["name"], "GammaSMP")
 
     def test_combined_filters(self):
-        resp = self.client.get("/api/servers/", {
-            "country": "US",
-            "players_min": 100,
-            "tags": "pvp",
-        })
+        resp = self.client.get(
+            "/api/servers/",
+            {
+                "country": "US",
+                "players_min": 100,
+                "tags": "pvp",
+            },
+        )
         data = resp.json()
         self.assertEqual(data["count"], 1)
         self.assertEqual(data["results"][0]["name"], "GammaSMP")
@@ -149,8 +152,17 @@ class ServerListAPITest(TestCase):
         resp = self.client.get("/api/servers/")
         result = resp.json()["results"][0]
         expected_keys = {
-            "id", "name", "game_version", "edition", "online_players",
-            "max_players", "votes", "country", "tags", "banner_url", "is_online",
+            "id",
+            "name",
+            "game_version",
+            "edition",
+            "online_players",
+            "max_players",
+            "votes",
+            "country",
+            "tags",
+            "banner_url",
+            "is_online",
         }
         self.assertTrue(expected_keys.issubset(result.keys()))
         self.assertIsInstance(result["tags"], list)
@@ -196,10 +208,26 @@ class ServerDetailAPITest(TestCase):
         resp = self.client.get(f"/api/servers/{self.server.id}/")
         data = resp.json()
         expected_keys = {
-            "id", "name", "ip_address", "port", "description", "game_version",
-            "edition", "online_players", "max_players", "votes", "country",
-            "website_url", "discord_url", "banner_url", "is_online", "tags",
-            "sources", "created_at", "updated_at", "last_checked",
+            "id",
+            "name",
+            "ip_address",
+            "port",
+            "description",
+            "game_version",
+            "edition",
+            "online_players",
+            "max_players",
+            "votes",
+            "country",
+            "website_url",
+            "discord_url",
+            "banner_url",
+            "is_online",
+            "tags",
+            "sources",
+            "created_at",
+            "updated_at",
+            "last_checked",
         }
         self.assertTrue(expected_keys.issubset(data.keys()))
 

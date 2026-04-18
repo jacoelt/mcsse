@@ -18,8 +18,16 @@ class ServerSourceInline(admin.TabularInline):
 @admin.register(Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = [
-        "name", "ip_address", "port", "edition", "game_version",
-        "online_players", "max_players", "votes", "country", "is_online",
+        "name",
+        "ip_address",
+        "port",
+        "edition",
+        "game_version",
+        "online_players",
+        "max_players",
+        "votes",
+        "country",
+        "is_online",
     ]
     list_filter = ["edition", "is_online", "country"]
     search_fields = ["name", "ip_address"]

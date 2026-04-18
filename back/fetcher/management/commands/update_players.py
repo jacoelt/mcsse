@@ -21,9 +21,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Fetched {len(all_counts)} player count entries")
 
         updated = update_player_counts(all_counts)
-        self.stdout.write(
-            self.style.SUCCESS(f"Done: {updated} servers updated")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Done: {updated} servers updated"))
 
     async def _fetch_counts(self, fetchers):
         results = []
@@ -35,7 +33,5 @@ class Command(BaseCommand):
                     count += 1
                 logger.info(f"{fetcher.source_name}: fetched {count} player counts")
             except Exception:
-                logger.exception(
-                    f"Error fetching player counts from {fetcher.source_name}"
-                )
+                logger.exception(f"Error fetching player counts from {fetcher.source_name}")
         return results

@@ -27,9 +27,7 @@ class Server(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     game_version = models.CharField(max_length=50, blank=True, default="")
-    edition = models.CharField(
-        max_length=10, choices=Edition.choices, default=Edition.JAVA
-    )
+    edition = models.CharField(max_length=10, choices=Edition.choices, default=Edition.JAVA)
     online_players = models.IntegerField(default=0)
     max_players = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
@@ -66,9 +64,7 @@ class Server(models.Model):
 
 
 class ServerSource(models.Model):
-    server = models.ForeignKey(
-        Server, on_delete=models.CASCADE, related_name="sources"
-    )
+    server = models.ForeignKey(Server, on_delete=models.CASCADE, related_name="sources")
     source_name = models.CharField(max_length=50)
     source_url = models.URLField(max_length=500, blank=True, default="")
     external_id = models.CharField(max_length=255)
