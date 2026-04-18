@@ -8,8 +8,6 @@ from fetcher.base import FetchedServer, PlayerCount, ServerFetcher
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 50
-
 
 class BestMinecraftServersFetcher(ServerFetcher):
     source_name = "best-minecraft-servers"
@@ -17,12 +15,18 @@ class BestMinecraftServersFetcher(ServerFetcher):
     base_url = "https://best-minecraft-servers.co"
 
     async def fetch_servers(self):
+        # Past-the-end pages on this site enter a redirect loop; pages 2+ also
+        # repeat the same ~13 sticky/featured rows forever. Disable redirect
+        # following so any 3xx reads as end-of-list, and dedupe by external_id
+        # so repeated stickies don't blow up the fetch.
+        seen: set[str] = set()
         async with httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-            follow_redirects=True,
+            follow_redirects=False,
             timeout=30,
         ) as client:
-            for page in range(1, MAX_PAGES + 1):
+            page = 1
+            while True:
                 url = f"{self.base_url}/pg.{page}" if page > 1 else self.base_url
                 try:
                     resp = await client.get(url)
@@ -33,18 +37,30 @@ class BestMinecraftServersFetcher(ServerFetcher):
                     break
 
                 soup = BeautifulSoup(resp.text, "lxml")
-                rows = soup.select("table.servers tbody tr")
+                rows = soup.select("table.servers tr.o")
                 if not rows:
                     break
 
+                logger.debug("%s: page %d, %d rows", self.source_name, page, len(rows))
+
+                new_on_page = 0
                 for row in rows:
                     server = self._parse_row(row)
-                    if server:
-                        yield server
+                    if not server or server.external_id in seen:
+                        continue
+                    seen.add(server.external_id)
+                    new_on_page += 1
+                    yield server
+
+                if new_on_page == 0:
+                    break
+
+                page += 1
 
     def _parse_row(self, row) -> FetchedServer | None:
-        # Server link and ID
-        name_link = row.select_one("td.name h3.server-name a")
+        # Two layouts share this table: sponsor rows nest <a> inside <h3>,
+        # non-sponsor rows nest <h3> inside <a>. Match the link directly.
+        name_link = row.select_one('td.name a[href^="/server-"]')
         if not name_link:
             return None
 
