@@ -2,11 +2,10 @@ import logging
 from collections import defaultdict
 from datetime import datetime, timezone
 
-from django.utils.text import slugify
-
 from core.models import Server, ServerSource, Tag
 
 from .base import FetchedServer
+from .tag_rules import display_name_for, normalize_tag
 
 logger = logging.getLogger(__name__)
 
@@ -118,9 +117,11 @@ def _merge_entries(
             result["max_players"] = server.max_players
             result["is_online"] = server.is_online
 
-        # Tags: union
+        # Tags: normalize, drop stopwords/numerics, union canonical slugs
         for tag in server.tags:
-            result["tags"].add(tag.lower().strip())
+            canonical = normalize_tag(tag)
+            if canonical:
+                result["tags"].add(canonical)
 
     result["votes"] = total_votes
     result["description"] = best_description
@@ -201,18 +202,16 @@ def _upsert_sources(
 
 
 def _sync_tags(server: Server, tag_names: set[str]):
-    """Sync the server's tags M2M from a set of tag name strings."""
+    """Sync the server's tags M2M. Incoming names are already canonical slugs."""
     if not tag_names:
+        server.tags.clear()
         return
 
     tag_objects = []
-    for tag_name in tag_names:
-        slug = slugify(tag_name)
-        if not slug:
-            continue
+    for slug in tag_names:
         tag, _ = Tag.objects.get_or_create(
             name=slug,
-            defaults={"display_name": tag_name.title()},
+            defaults={"display_name": display_name_for(slug)},
         )
         tag_objects.append(tag)
 

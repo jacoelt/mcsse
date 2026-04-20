@@ -292,6 +292,83 @@ class ReconcilerMergeRulesTest(TestCase):
         self.assertEqual(server.max_players, 500)
 
 
+class ReconcilerTagNormalizationTest(TestCase):
+    """Test that incoming tags get normalized via fetcher.tag_rules before DB sync."""
+
+    def _reconcile_with_tags(self, tags, name="TagTest", ip="10.0.0.1"):
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="1",
+                    name=name,
+                    ip_address=ip,
+                    tags=tags,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        return Server.objects.get(ip_address=ip)
+
+    def test_tag_plural_normalization(self):
+        """Plurals fold into their singular form."""
+        server = self._reconcile_with_tags(["auctions", "clans", "bosses"])
+        tag_names = set(server.tags.values_list("name", flat=True))
+        self.assertEqual(tag_names, {"auction", "clan", "boss"})
+
+    def test_tag_stopword_drop(self):
+        """Stopword tags and bare numerics are dropped entirely."""
+        server = self._reconcile_with_tags(["amazing", "1710", "Survival", "any"])
+        tag_names = set(server.tags.values_list("name", flat=True))
+        self.assertEqual(tag_names, {"survival"})
+
+    def test_tag_alias_rewrite(self):
+        """Aliased forms map to their canonical slug."""
+        server = self._reconcile_with_tags(["bedw", "aventura", "ctf"])
+        tag_names = set(server.tags.values_list("name", flat=True))
+        self.assertEqual(tag_names, {"bedwars", "adventure", "ctf"})
+
+    def test_tag_separator_collapse(self):
+        """Different separator variants collapse to a single canonical tag."""
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="1",
+                    name="SepTest",
+                    ip_address="10.0.0.2",
+                    tags=["Bed Wars", "bed-wars"],
+                ),
+            ),
+            (
+                "topg",
+                FetchedServer(
+                    external_id="2",
+                    name="SepTest",
+                    ip_address="10.0.0.2",
+                    tags=["bedwars", "BEDWARS"],
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        server = Server.objects.get(ip_address="10.0.0.2")
+        tag_names = list(server.tags.values_list("name", flat=True))
+        self.assertEqual(tag_names, ["bedwars"])
+        self.assertEqual(Tag.objects.filter(name="bedwars").count(), 1)
+
+    def test_tag_unicode_strip(self):
+        """Accented and garbage-encoded tags normalize cleanly."""
+        server = self._reconcile_with_tags(["créatif", "sobrevivência"])
+        tag_names = set(server.tags.values_list("name", flat=True))
+        self.assertEqual(tag_names, {"creative", "survival"})
+
+    def test_tag_display_name_uses_override(self):
+        """Tags with a DISPLAY_OVERRIDES entry get the pretty form on creation."""
+        self._reconcile_with_tags(["pvp", "bed wars"])
+        self.assertEqual(Tag.objects.get(name="pvp").display_name, "PvP")
+        self.assertEqual(Tag.objects.get(name="bedwars").display_name, "Bed Wars")
+
+
 class ReconcilerSourceTrackingTest(TestCase):
     """Test that ServerSource records are created and updated."""
 
