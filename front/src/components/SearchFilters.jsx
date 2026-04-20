@@ -1,7 +1,7 @@
 import { useState } from 'react'
+import LogRangeSlider from './LogRangeSlider'
 
-const PLAYER_RANGES = [0, 10, 100, 1000, 10000, 100000]
-const VOTE_RANGES = [0, 10, 100, 1000, 10000, 100000]
+const LOG_STEPS = [0, 10, 100, 1000, 10000, 100000]
 const UPDATED_WITHIN_OPTIONS = [
   { value: '1', label: 'Last 24 hours' },
   { value: '7', label: 'Last 7 days' },
@@ -17,6 +17,10 @@ export default function SearchFilters({ filters, params, onChange, onReset }) {
 
   function set(key, value) {
     onChange({ ...params, [key]: value || undefined })
+  }
+
+  function setRange(minKey, maxKey, { min, max }) {
+    onChange({ ...params, [minKey]: min, [maxKey]: max })
   }
 
   return (
@@ -85,74 +89,29 @@ export default function SearchFilters({ filters, params, onChange, onReset }) {
           </div>
         </div>
 
-        {/* Online Players */}
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Online Players</label>
-          <div className="flex gap-2">
-            <select
-              value={params.players_min ?? ''}
-              onChange={e => set('players_min', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Min</option>
-              {PLAYER_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-            <select
-              value={params.players_max ?? ''}
-              onChange={e => set('players_max', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Max</option>
-              {PLAYER_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-          </div>
-        </div>
+        <LogRangeSlider
+          label="Online Players"
+          steps={LOG_STEPS}
+          minValue={params.players_min}
+          maxValue={params.players_max}
+          onCommit={range => setRange('players_min', 'players_max', range)}
+        />
 
-        {/* Max Players (slots) */}
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Max Player Slots</label>
-          <div className="flex gap-2">
-            <select
-              value={params.max_players_min ?? ''}
-              onChange={e => set('max_players_min', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Min</option>
-              {PLAYER_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-            <select
-              value={params.max_players_max ?? ''}
-              onChange={e => set('max_players_max', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Max</option>
-              {PLAYER_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-          </div>
-        </div>
+        <LogRangeSlider
+          label="Max Player Slots"
+          steps={LOG_STEPS}
+          minValue={params.max_players_min}
+          maxValue={params.max_players_max}
+          onCommit={range => setRange('max_players_min', 'max_players_max', range)}
+        />
 
-        {/* Votes */}
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Votes</label>
-          <div className="flex gap-2">
-            <select
-              value={params.votes_min ?? ''}
-              onChange={e => set('votes_min', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Min</option>
-              {VOTE_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-            <select
-              value={params.votes_max ?? ''}
-              onChange={e => set('votes_max', e.target.value)}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
-            >
-              <option value="">Max</option>
-              {VOTE_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
-            </select>
-          </div>
-        </div>
+        <LogRangeSlider
+          label="Votes"
+          steps={LOG_STEPS}
+          minValue={params.votes_min}
+          maxValue={params.votes_max}
+          onCommit={range => setRange('votes_min', 'votes_max', range)}
+        />
 
         {/* Last Updated */}
         <div>
