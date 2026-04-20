@@ -6,17 +6,21 @@ import ServerCard from '../components/ServerCard'
 import AdSpace from '../components/AdSpace'
 
 const PAGE_SIZE = 20
+const DEFAULT_UPDATED_WITHIN_DAYS = '7'
 const FILTER_KEYS = [
   'q', 'version', 'edition', 'players_min', 'players_max',
   'max_players_min', 'max_players_max', 'votes_min', 'votes_max',
-  'country', 'tags', 'sort',
+  'country', 'tags', 'sort', 'updated_within_days',
 ]
 
 function paramsFromSearch(searchParams) {
   const p = {}
   for (const key of FILTER_KEYS) {
     const val = searchParams.get(key)
-    if (val) p[key] = val
+    if (val !== null && val !== '') p[key] = val
+  }
+  if (p.updated_within_days === undefined) {
+    p.updated_within_days = DEFAULT_UPDATED_WITHIN_DAYS
   }
   return p
 }
@@ -100,7 +104,7 @@ export default function SearchPage() {
   }, [hasMore, loading])
 
   const handleReset = useCallback(() => {
-    setParams({})
+    setParams({ updated_within_days: DEFAULT_UPDATED_WITHIN_DAYS })
   }, [])
 
   return (

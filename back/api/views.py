@@ -1,10 +1,14 @@
 import threading
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.management import call_command
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from ninja import NinjaAPI, Query
+from pydantic import Field
+from typing_extensions import Annotated
 
 from core.models import Server, Tag
 
@@ -44,9 +48,14 @@ def list_servers(
     sort: str = "-online_players",
     page: int = 1,
     page_size: int = 20,
+    updated_within_days: Annotated[int, Field(ge=0)] = None,
 ):
     qs = Server.objects.prefetch_related("tags").all()
     qs = filters.filter(qs)
+
+    if updated_within_days:
+        cutoff = timezone.now() - timedelta(days=updated_within_days)
+        qs = qs.filter(updated_at__gte=cutoff)
 
     if tags:
         tag_slugs = [t.strip() for t in tags.split(",") if t.strip()]

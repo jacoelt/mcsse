@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.test import TestCase, Client
+from django.utils import timezone
 
 from core.models import Server, Tag
 
@@ -166,6 +169,47 @@ class ServerListAPITest(TestCase):
         }
         self.assertTrue(expected_keys.issubset(result.keys()))
         self.assertIsInstance(result["tags"], list)
+
+
+class UpdatedWithinDaysFilterTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.fresh = ServerFactory(name="Fresh")
+        self.stale_10 = ServerFactory(name="Stale10")
+        self.stale_60 = ServerFactory(name="Stale60")
+
+        now = timezone.now()
+        Server.objects.filter(pk=self.fresh.pk).update(updated_at=now - timedelta(days=1))
+        Server.objects.filter(pk=self.stale_10.pk).update(updated_at=now - timedelta(days=10))
+        Server.objects.filter(pk=self.stale_60.pk).update(updated_at=now - timedelta(days=60))
+
+    def test_no_param_returns_all(self):
+        resp = self.client.get("/api/servers/")
+        data = resp.json()
+        self.assertEqual(data["count"], 3)
+
+    def test_filter_last_7_days(self):
+        resp = self.client.get("/api/servers/", {"updated_within_days": 7})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        names = {r["name"] for r in data["results"]}
+        self.assertEqual(names, {"Fresh"})
+
+    def test_filter_last_30_days(self):
+        resp = self.client.get("/api/servers/", {"updated_within_days": 30})
+        data = resp.json()
+        names = {r["name"] for r in data["results"]}
+        self.assertEqual(names, {"Fresh", "Stale10"})
+
+    def test_zero_means_any_time(self):
+        resp = self.client.get("/api/servers/", {"updated_within_days": 0})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 3)
+
+    def test_negative_rejected(self):
+        resp = self.client.get("/api/servers/", {"updated_within_days": -1})
+        self.assertEqual(resp.status_code, 422)
 
 
 class ServerDetailAPITest(TestCase):

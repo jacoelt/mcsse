@@ -2,6 +2,15 @@ import { useState } from 'react'
 
 const PLAYER_RANGES = [0, 10, 100, 1000, 10000, 100000]
 const VOTE_RANGES = [0, 10, 100, 1000, 10000, 100000]
+const UPDATED_WITHIN_OPTIONS = [
+  { value: '1', label: 'Last 24 hours' },
+  { value: '7', label: 'Last 7 days' },
+  { value: '30', label: 'Last 30 days' },
+  { value: '90', label: 'Last 90 days' },
+  { value: '180', label: 'Last 180 days' },
+  { value: '365', label: 'Last year' },
+  { value: '0', label: 'Any time' },
+]
 
 export default function SearchFilters({ filters, params, onChange, onReset }) {
   const [collapsed, setCollapsed] = useState(false)
@@ -143,6 +152,20 @@ export default function SearchFilters({ filters, params, onChange, onReset }) {
               {VOTE_RANGES.map(v => <option key={v} value={v}>{v.toLocaleString()}</option>)}
             </select>
           </div>
+        </div>
+
+        {/* Last Updated */}
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Last updated</label>
+          <select
+            value={params.updated_within_days ?? '7'}
+            onChange={e => set('updated_within_days', e.target.value)}
+            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
+          >
+            {UPDATED_WITHIN_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
 
         {/* Country */}
