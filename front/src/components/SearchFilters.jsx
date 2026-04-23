@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import LogRangeSlider from './LogRangeSlider'
+import TagCombobox from './TagCombobox'
 
 const LOG_STEPS = [0, 10, 100, 1000, 10000, 100000]
 const UPDATED_WITHIN_OPTIONS = [
@@ -144,32 +145,11 @@ export default function SearchFilters({ filters, params, onChange, onReset }) {
           </select>
         </div>
 
-        {/* Tags */}
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1">Tags</label>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {filters.tags?.slice(0, 30).map(tag => {
-              const activeTags = params.tags ? params.tags.split(',') : []
-              const isActive = activeTags.includes(tag.name)
-              return (
-                <label key={tag.name} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={() => {
-                      const next = isActive
-                        ? activeTags.filter(t => t !== tag.name)
-                        : [...activeTags, tag.name]
-                      set('tags', next.filter(Boolean).join(','))
-                    }}
-                    className="accent-emerald-500"
-                  />
-                  {tag.display_name} ({tag.count})
-                </label>
-              )
-            })}
-          </div>
-        </div>
+        <TagCombobox
+          tags={filters.tags || []}
+          selectedNames={params.tags ? params.tags.split(',').filter(Boolean) : []}
+          onChange={names => set('tags', names.length > 0 ? names.join(',') : undefined)}
+        />
 
         {/* Sort */}
         <div>
