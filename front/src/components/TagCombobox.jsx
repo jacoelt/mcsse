@@ -51,7 +51,10 @@ export default function TagCombobox({ tags, selectedNames, onChange }) {
                 {tag.display_name}
                 <button
                   type="button"
-                  onClick={() => removeTag(tag.name)}
+                  onClick={e => {
+                    e.stopPropagation()
+                    removeTag(tag.name)
+                  }}
                   className="hover:text-white"
                   aria-label={`Remove ${tag.display_name}`}
                 >
