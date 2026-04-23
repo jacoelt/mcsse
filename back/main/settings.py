@@ -97,3 +97,27 @@ CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:
 
 # Fetch API key for protected internal endpoints
 FETCH_API_KEY = os.environ.get("FETCH_API_KEY", "dev-fetch-key")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "fetcher": {
+            "handlers": ["console"],
+            "level": os.environ.get("FETCHER_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
