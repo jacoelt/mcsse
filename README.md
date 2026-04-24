@@ -65,11 +65,14 @@ python manage.py createsuperuser  # optional, for admin access
 ```bash
 cd front
 npm install
+cp .env.dist .env  # dev defaults point the UI at http://localhost:8000
 ```
 
-### Environment variables (optional)
+### Environment variables
 
-Set these for production or to use PostgreSQL locally:
+Both `back/` and `front/` follow the same pattern: copy `.env.dist` to `.env` (gitignored) and edit the values.
+
+**Backend** (`back/.env`) — set these for production or to use PostgreSQL locally:
 
 ```
 DATABASE_URL=postgres://user:pass@host:port/dbname
@@ -78,6 +81,12 @@ DEBUG=False
 ALLOWED_HOSTS=yourdomain.com
 CORS_ALLOWED_ORIGINS=https://your-frontend.com
 FETCH_API_KEY=your-fetch-key
+```
+
+**Frontend** (`front/.env`):
+
+```
+VITE_API_HOST=http://localhost:8000   # base URL of the backend API, no trailing slash
 ```
 
 ## Running locally
@@ -90,7 +99,7 @@ cd back
 source venv/Scripts/activate
 python manage.py runserver
 
-# Terminal 2 — frontend (runs on :5173, proxies /api to :8000)
+# Terminal 2 — frontend (runs on :5173, talks to the API at $VITE_API_HOST)
 cd front
 npm run dev
 ```
