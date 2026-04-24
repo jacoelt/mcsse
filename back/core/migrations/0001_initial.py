@@ -3,6 +3,7 @@
 import django.contrib.postgres.indexes
 import django.db.models.deletion
 import uuid
+from django.contrib.postgres.operations import TrigramExtension
 from django.db import migrations, models
 
 
@@ -14,6 +15,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        TrigramExtension(),
         migrations.CreateModel(
             name='Tag',
             fields=[
