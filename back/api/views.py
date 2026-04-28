@@ -45,7 +45,7 @@ def list_servers(
     request,
     filters: ServerFilterSchema = Query(...),
     tags: str = None,
-    sort: str = "-online_players",
+    sort: str = "name",
     page: int = 1,
     page_size: int = 20,
     updated_within_days: Annotated[int, Field(ge=0)] = None,

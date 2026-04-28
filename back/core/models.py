@@ -57,7 +57,7 @@ class Server(models.Model):
                 opclasses=["gin_trgm_ops"],
             ),
         ]
-        ordering = ["-online_players"]
+        ordering = ["name"]
 
     def __str__(self):
         return self.name

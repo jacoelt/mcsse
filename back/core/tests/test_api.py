@@ -52,11 +52,11 @@ class ServerListAPITest(TestCase):
         self.assertEqual(data["count"], 3)
         self.assertEqual(len(data["results"]), 3)
 
-    def test_default_sort_by_players_desc(self):
+    def test_default_sort_by_name_asc(self):
         resp = self.client.get("/api/servers/")
         data = resp.json()
-        players = [r["online_players"] for r in data["results"]]
-        self.assertEqual(players, [1000, 200, 50])
+        names = [r["name"] for r in data["results"]]
+        self.assertEqual(names, ["AlphaCraft", "BetaWorld", "GammaSMP"])
 
     def test_sort_by_votes(self):
         resp = self.client.get("/api/servers/", {"sort": "-votes"})
@@ -135,8 +135,8 @@ class ServerListAPITest(TestCase):
     def test_invalid_sort_ignored(self):
         resp = self.client.get("/api/servers/", {"sort": "hacked_field"})
         data = resp.json()
-        # Falls back to default ordering (model Meta: -online_players)
-        self.assertEqual(data["results"][0]["name"], "GammaSMP")
+        # Falls back to default ordering (model Meta: name asc)
+        self.assertEqual(data["results"][0]["name"], "AlphaCraft")
 
     def test_combined_filters(self):
         resp = self.client.get(

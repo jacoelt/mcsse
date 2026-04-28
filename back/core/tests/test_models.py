@@ -25,11 +25,11 @@ class ServerModelTest(TestCase):
         self.assertTrue(server.created_at)
 
     def test_default_ordering(self):
-        s1 = ServerFactory(online_players=10)
-        s2 = ServerFactory(online_players=100)
-        s3 = ServerFactory(online_players=50)
+        s_b = ServerFactory(name="Bravo")
+        s_a = ServerFactory(name="Alpha")
+        s_c = ServerFactory(name="Charlie")
         servers = list(Server.objects.all())
-        self.assertEqual(servers, [s2, s3, s1])
+        self.assertEqual(servers, [s_a, s_b, s_c])
 
     def test_tags_relationship(self):
         tag1 = TagFactory(name="survival")

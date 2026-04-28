@@ -263,7 +263,8 @@ class ReconcilerMergeRulesTest(TestCase):
         server = Server.objects.first()
         self.assertEqual(server.country, "FR")
 
-    def test_players_uses_highest_value(self):
+    def test_players_uses_highest_priority_valid_source(self):
+        """Highest-priority source with a valid reading wins, even if lower."""
         fetched = [
             (
                 "minecraft-mp",
@@ -288,8 +289,117 @@ class ReconcilerMergeRulesTest(TestCase):
         ]
         reconcile_servers(fetched)
         server = Server.objects.first()
-        self.assertEqual(server.online_players, 200)
+        self.assertEqual(server.online_players, 50)
+        self.assertEqual(server.max_players, 100)
+
+    def test_players_falls_through_when_top_source_has_no_signal(self):
+        """0/0 from highest-priority source falls through to next source."""
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="1",
+                    name="PlayerServer",
+                    ip_address="1.2.3.4",
+                    online_players=0,
+                    max_players=0,
+                ),
+            ),
+            (
+                "topg",
+                FetchedServer(
+                    external_id="2",
+                    name="PlayerServer",
+                    ip_address="1.2.3.4",
+                    online_players=42,
+                    max_players=100,
+                    is_online=True,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        server = Server.objects.first()
+        self.assertEqual(server.online_players, 42)
+        self.assertEqual(server.max_players, 100)
+        self.assertTrue(server.is_online)
+
+    def test_players_drops_inflated_count_above_cap(self):
+        """Counts above 20k are rejected; reconciler falls through."""
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="1",
+                    name="FakeyServer",
+                    ip_address="1.2.3.4",
+                    online_players=27_272_729,
+                    max_players=100_000_000,
+                ),
+            ),
+            (
+                "topg",
+                FetchedServer(
+                    external_id="2",
+                    name="FakeyServer",
+                    ip_address="1.2.3.4",
+                    online_players=120,
+                    max_players=500,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        server = Server.objects.first()
+        self.assertEqual(server.online_players, 120)
         self.assertEqual(server.max_players, 500)
+
+    def test_players_drops_when_online_exceeds_max(self):
+        """online > max is impossible (e.g. 65535/100 sentinel); falls through."""
+        fetched = [
+            (
+                "planetminecraft",
+                FetchedServer(
+                    external_id="1",
+                    name="SentinelServer",
+                    ip_address="1.2.3.4",
+                    online_players=65535,
+                    max_players=100,
+                ),
+            ),
+            (
+                "topg",
+                FetchedServer(
+                    external_id="2",
+                    name="SentinelServer",
+                    ip_address="1.2.3.4",
+                    online_players=10,
+                    max_players=100,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        server = Server.objects.first()
+        self.assertEqual(server.online_players, 10)
+        self.assertEqual(server.max_players, 100)
+
+    def test_players_all_sources_invalid_leaves_zero(self):
+        """If no source has a valid reading, players stay at the default zero."""
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="1",
+                    name="AllBad",
+                    ip_address="1.2.3.4",
+                    online_players=999_999,
+                    max_players=999_999,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+        server = Server.objects.first()
+        self.assertEqual(server.online_players, 0)
+        self.assertEqual(server.max_players, 0)
+        self.assertFalse(server.is_online)
 
 
 class ReconcilerTagNormalizationTest(TestCase):
@@ -489,6 +599,38 @@ class UpdatePlayerCountsTest(TestCase):
         ]
         updated = update_player_counts(counts)
         self.assertEqual(updated, 0)
+
+    def test_update_drops_inflated_count(self):
+        """Hourly path rejects counts above the plausibility cap."""
+        fetched = [
+            (
+                "minecraft-mp",
+                FetchedServer(
+                    external_id="m1",
+                    name="CapServer",
+                    ip_address="1.2.3.4",
+                    online_players=10,
+                    max_players=100,
+                    is_online=True,
+                ),
+            ),
+        ]
+        reconcile_servers(fetched)
+
+        counts = [
+            (
+                "minecraft-mp",
+                PlayerCount(
+                    external_id="m1",
+                    online_players=27_272_729,
+                    is_online=True,
+                ),
+            ),
+        ]
+        updated = update_player_counts(counts)
+        self.assertEqual(updated, 0)
+        server = Server.objects.first()
+        self.assertEqual(server.online_players, 10)
 
     def test_update_sets_offline(self):
         fetched = [

@@ -103,8 +103,13 @@ class PlanetMinecraftFetcher(ServerFetcher):
             pm = re.search(r"(\d[\d,]*)/(\d[\d,]*)", text)
             if pm:
                 try:
-                    online_players = int(pm.group(1).replace(",", ""))
-                    max_players = int(pm.group(2).replace(",", ""))
+                    op = int(pm.group(1).replace(",", ""))
+                    mp = int(pm.group(2).replace(",", ""))
+                    # 0xFFFF = 65535 is the protocol "unknown" sentinel; drop both
+                    # fields so the reconciler falls through to a real source.
+                    if op != 65535 and mp != 65535:
+                        online_players = op
+                        max_players = mp
                 except ValueError:
                     pass
 

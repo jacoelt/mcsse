@@ -22,6 +22,21 @@ SOURCE_PRIORITY = {
     "serveur-minecraft": 9,
 }
 
+# Real-world peak ever recorded on a single MC server is ~14k. Anything above
+# this is a self-reported fake (listing sites accept whatever owners submit).
+MAX_PLAUSIBLE_PLAYERS = 20_000
+
+
+def _is_valid_player_count(online: int, max_p: int) -> bool:
+    """A reading is valid if it carries signal and isn't an obvious fake/sentinel."""
+    if online < 0 or max_p < 0:
+        return False
+    if online > MAX_PLAUSIBLE_PLAYERS or max_p > MAX_PLAUSIBLE_PLAYERS:
+        return False
+    if max_p > 0 and online > max_p:
+        return False
+    return online > 0 or max_p > 0
+
 
 def reconcile_servers(fetched: list[tuple[str, FetchedServer]]):
     """
@@ -83,7 +98,7 @@ def _merge_entries(
 
     total_votes = 0
     best_description = ""
-    latest_players = (None, 0, 0, False)  # (timestamp, online, max, is_online)
+    players_filled = False
 
     # Entries are already sorted by priority (highest first)
     for source_name, server in entries:
@@ -111,11 +126,16 @@ def _merge_entries(
         if len(server.description) > len(best_description):
             best_description = server.description
 
-        # Players: use the value (all fetched roughly at the same time)
-        if server.online_players > result["online_players"]:
+        # Players: take the first valid reading in priority order. Drop fakes
+        # (>20k), sentinels (e.g. 65535), and online>max. Skip 0/0 (no signal)
+        # so we fall through to a lower-priority source that has real data.
+        if not players_filled and _is_valid_player_count(
+            server.online_players, server.max_players
+        ):
             result["online_players"] = server.online_players
             result["max_players"] = server.max_players
             result["is_online"] = server.is_online
+            players_filled = True
 
         # Tags: normalize, drop stopwords/numerics, union canonical slugs
         for tag in server.tags:
@@ -224,6 +244,9 @@ def update_player_counts(counts: list[tuple[str, "PlayerCount"]]):
 
     updated = 0
     for source_name, pc in counts:
+        if pc.online_players < 0 or pc.online_players > MAX_PLAUSIBLE_PLAYERS:
+            continue
+
         try:
             source = ServerSource.objects.select_related("server").get(
                 source_name=source_name,

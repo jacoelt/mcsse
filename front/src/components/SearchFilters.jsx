@@ -155,7 +155,7 @@ export default function SearchFilters({ filters, params, onChange, onReset }) {
         <div>
           <label className="block text-xs font-medium text-gray-400 mb-1">Sort by</label>
           <select
-            value={params.sort || '-online_players'}
+            value={params.sort || 'name'}
             onChange={e => set('sort', e.target.value)}
             className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-emerald-500"
           >
