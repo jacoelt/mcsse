@@ -85,8 +85,8 @@ class FindMCServerFetcher(ServerFetcher):
         country = ""
         for loc in item.get("serverLocation") or []:
             name = (loc.get("name") or "").strip()
-            if name:
-                country = name
+            if len(name) == 2 and name.isalpha():
+                country = name.upper()
                 break
 
         banner = ""
