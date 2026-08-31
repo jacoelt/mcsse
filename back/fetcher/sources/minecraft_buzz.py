@@ -64,12 +64,15 @@ class MinecraftBuzzFetcher(ServerFetcher):
                 page += 1
 
     def _parse_row(self, row) -> FetchedServer | None:
-        external_id = row.get("id", "")
+        # The id used to live on the row's `id` attribute and now sits in
+        # `data-server-id`. Accept either: reading only `id` returned an empty
+        # string and silently rejected every row on the page.
+        external_id = row.get("data-server-id", "") or row.get("id", "")
         if not external_id:
             return None
 
-        # Name
-        name_el = row.select_one("h3")
+        # Name — the heading level moved from <h3> to <h2>.
+        name_el = row.select_one("h2, h3")
         name = name_el.get_text(strip=True) if name_el else ""
 
         # IP

@@ -1,5 +1,6 @@
 import logging
 import re
+from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
@@ -60,12 +61,16 @@ class BestMinecraftServersFetcher(ServerFetcher):
     def _parse_row(self, row) -> FetchedServer | None:
         # Two layouts share this table: sponsor rows nest <a> inside <h3>,
         # non-sponsor rows nest <h3> inside <a>. Match the link directly.
-        name_link = row.select_one('td.name a[href^="/server-"]')
+        #
+        # The site serves absolute hrefs ("https://.../server-name.1234"), so
+        # match on the path fragment rather than anchoring at the start. A
+        # "/server-" prefix match silently rejected every row.
+        name_link = row.select_one('td.name a[href*="/server-"]')
         if not name_link:
             return None
 
         href = name_link.get("href", "")
-        # href like "/server-complex-gaming.2763"
+        # href like "https://best-minecraft-servers.co/server-complex-gaming.2763"
         match = re.search(r"\.(\d+)$", href)
         if not match:
             return None
@@ -113,7 +118,9 @@ class BestMinecraftServersFetcher(ServerFetcher):
             online_players=online_players,
             max_players=max_players,
             is_online=is_online,
-            source_url=f"{self.base_url}{href}",
+            # urljoin, not concatenation: href is absolute here but was relative
+            # historically, and concatenating an absolute href yields garbage.
+            source_url=urljoin(self.base_url, href),
         )
 
     async def fetch_player_counts(self):
