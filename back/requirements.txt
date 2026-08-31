@@ -10,7 +10,7 @@ colorama==0.4.6
 coverage==7.13.5
 curl_cffi==0.15.0
 dj-database-url==3.1.2
-Django==6.0.4
+Django==6.0.8
 django-cors-headers==4.9.0
 django-ninja==1.6.2
 factory_boy==3.3.3
@@ -22,7 +22,7 @@ httpx==0.28.1
 idna==3.11
 inflect==7.5.0
 more_itertools==11.0.2
-lxml==6.0.2
+lxml==6.1.2
 mypy-extensions==1.1.0
 packaging==26.0
 pathspec==1.0.4
